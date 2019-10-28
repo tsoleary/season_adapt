@@ -1,1 +1,1 @@
-# seasonal adaptation moedling -------------------------------------------------
+# seasonal adaptation modeling -------------------------------------------------
