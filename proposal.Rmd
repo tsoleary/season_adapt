@@ -13,7 +13,7 @@ Seasonal changes in allele frequency has been observed experimentally in a popul
 
 We hope to build upon the model developed by @Bergland2014. Their model relies upon a mechanishm they call "segregation lift," which necessary "requires seasonal changes in dominance, a phenomenon that may arise naturally in situations with antagonistic pleiotropy and seasonal changes in the relative importance of traits for fitness" [@Wittmann2017]. We want to try to fully understand their model and develop something that may incorporate new variables such as linkage.
 
-Perhaps incorporating looking at seasonal adaptation in other model species such as Copepods. It would be great to do because Melissa would then like the project.
+Perhaps incorporating looking at seasonal adaptation in other model species such as Copepods. It would be great to do because Melissa would then like the project. Github is not fun!
 
 --
 
