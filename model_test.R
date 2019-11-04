@@ -56,6 +56,7 @@ fitness <- z_score %>%
   mutate(f_winter = (1 + z_winter) ^ y,
          f_summer = (1 + z_summer) ^ y)
 
+
 # selection of the parents 
 # tournament
 # totally random panmictic mating ???
@@ -64,11 +65,13 @@ fitness <- z_score %>%
 
 # crossover 
 cross_prob <- 0.2
-runif(L) < cross_prob
-select(genome, contains("locus"))
+cross <- sample(0:1, pop_size, prob = c(1 - cross_prob, cross_prob))
+cross_loc <- sample(2:L, 1)
+cross_genome <- select(genome, contains("locus"))[1:2, cross_loc:L]
+cross_genome[c(1,2), ] <- cross_genome[c(2,1), ]
+genome[1:2, (length(genome) - length(cross_loc:L) + 1):length(genome)] <- cross_genome
 
 
-  
   
 
 
