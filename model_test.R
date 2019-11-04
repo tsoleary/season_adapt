@@ -62,8 +62,32 @@ fitness <- z_score %>%
 # totally random panmictic mating ???
 
 
+# mutation on the entire population each generation before crossover
+mut_prob <- 0.05 #1*10^(-4)
+
+mut_test_mat <- matrix(runif(L*pop_size*2), 
+                       nrow = pop_size * 2, 
+                       ncol = L)
+mut_pos <- mut_test_mat < mut_prob
+
+mut_vals <- matrix(sample(0:1, 50, replace = TRUE), 
+                   nrow = pop_size * 2, 
+                   ncol = L)
+
+mut_mat <- mut_vals * mut_pos
+
+mat <- matrix(as.numeric(as.matrix(select(genome, contains("locus")))),
+              nrow = pop_size * 2,
+              ncol = L)
+
+par_mat <- mat * !mut_pos
+
+new_mat <- mut_mat + par_mat
+
 
 # crossover 
+# this cross over requires only one parent at a time
+# would it be possible to do all at once, maybe with dplyr real quick??
 cross_prob <- 0.2
 cross <- sample(0:1, pop_size, prob = c(1 - cross_prob, cross_prob))
 cross_loc <- sample(2:L, 1)
@@ -72,6 +96,6 @@ cross_genome[c(1,2), ] <- cross_genome[c(2,1), ]
 genome[1:2, (length(genome) - length(cross_loc:L) + 1):length(genome)] <- cross_genome
 
 
-  
+
 
 
