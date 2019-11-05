@@ -81,10 +81,10 @@ fitness=fitness_func(genomes)
 
 # Selecting individuals for the next generation, depends on season
 curr_season <- season
-if (curr_season == "summer") {
-  selected_idx <- sample(seq_len(nrow(fitness)), S, prob=fitness$f_summer)
+if (curr_season == "summer") { # select 2 parents at random weighted by fitness
+  selected_idx <- sample(seq_len(nrow(fitness)), 2, prob=fitness$f_summer)
 } else {
-  selected_idx <- sample(seq_len(nrow(fitness)), S, prob=fitness$f_winter)  
+  selected_idx <- sample(seq_len(nrow(fitness)), 2, prob=fitness$f_winter)  
 }
 
 # selection of the parents 
