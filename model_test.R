@@ -21,7 +21,7 @@ r <- 1
 #which season we are in, by default start in summer
 season <- "summer"
 #how many people are selected to reproduce to next generation
-S<-5
+S<-5 # could cause bottlenecks if this value is low
 
 #site in genome = 0 = summer, 1 = winter
 #time of the year = 0 = summer, 1 = winter
