@@ -19,7 +19,9 @@ y = 1
 # recombination rate
 r <- 1
 #which season we are in, by default start in summer
-season <- 0
+season <- "summer"
+#how many people are selected to reproduce to next generation
+S<-5
 
 #site in genome = 0 = summer, 1 = winter
 #time of the year = 0 = summer, 1 = winter
@@ -78,9 +80,12 @@ fitness=fitness_func(genomes)
 
 
 # Selecting individuals for the next generation, depends on season
-#samp_idx <- sample(seq_len(nrow(fitness)), 5, prob=fitness$geno_0)
-
-
+curr_season <- season
+if (curr_season == "summer") {
+  selected_idx <- sample(seq_len(nrow(fitness)), S, prob=fitness$f_summer)
+} else {
+  selected_idx <- sample(seq_len(nrow(fitness)), S, prob=fitness$f_winter)  
+}
 
 # selection of the parents 
 # tournament
