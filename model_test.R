@@ -17,7 +17,7 @@ d <- 0.5
 # exponent of the fitness function? epistasis parameter or something?
 y <- 1
 # recombination rate
-r <- 1
+cross_prob <- 0.01
 
 #site in genome = 0 = summer, 1 = winter
 #time of the year = 0 = summer, 1 = winter
@@ -27,6 +27,11 @@ r <- 1
 genomes <- init_pop(L, pop_size)
 
 fitness_all <- fitness_func(genomes)
+
+ind1 <- genomes[1:2,]
+ind2 <- genomes[3:4,]
+#crossover takes individuals in this format
+ind_test<-cross_over(ind1, cross_prob)
 
 # mutation on the entire population each generation before crossover
 mut_prob <- 0.05 #1*10^(-4)
