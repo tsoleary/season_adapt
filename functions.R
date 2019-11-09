@@ -47,19 +47,9 @@ fitness_func <- function(genomes) {
 }
 
 # Selecting individuals for the next generation, depends on season
-ind1 <- genomes[1:2,]
-ind2 <- genomes[3:4,]
-ind1_chr1 <- filter(ind1, chr=="chr_1")
-ind1_chr2 <- filter(ind1, chr=="chr_2")
-ind2_chr1 <- filter(ind2, chr=="chr_1")
-ind2_chr2 <- filter(ind2, chr=="chr_2")
-cross_prob <- 0.01
 
-chr0 <- sample(0:0, L, replace=TRUE)
-chr1 <- sample(1:1, L, replace=TRUE)
 
 # takes individual with its 2 chromosomes
-
 cross_over <- function(ind, cross_prob) {
   stripped <- select(ind, contains("locus"))
   strip_names <- select(ind1, -contains("locus"))
@@ -69,12 +59,11 @@ cross_over <- function(ind, cross_prob) {
     cross_genome <- stripped[,cross_loc:L]
     cross_genome[c(1,2), ] <- cross_genome[c(2,1), ]
     stripped[,cross_loc:L] <- cross_genome
-    print(cross_loc)
   }
   return(cbind(strip_names, stripped))
 }
 
-ind_test<-cross_over(ind1, cross_prob)
+
 
 
 # if (curr_season == "summer") { # select 2 parents at random weighted by fitness
@@ -83,9 +72,6 @@ ind_test<-cross_over(ind1, cross_prob)
 #   selected_idx <- sample(seq_len(nrow(fitness)), 2, prob=fitness$f_winter, replace = FALSE)
 # }
 
-
-
-genomes[1:2, (length(genomes) - length(cross_loc:L) + 1):length(genomes)] <- cross_genome
 
 
 
