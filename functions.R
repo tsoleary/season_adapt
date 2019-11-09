@@ -24,7 +24,7 @@ fitness_func <- function(genomes) {
     pivot_longer(cols = contains("locus"), 
                  names_to = "loci", 
                  values_to = "allele")
-  # sumarize each locus for each inidividual across the two chromosomes
+  # sumarize each locus for each inidividual across the two chromosomes=
   genotype <- gen_tidy %>%
     group_by(individual, loci) %>%
     summarize(geno = sum(as.numeric(allele)))
@@ -71,6 +71,34 @@ cross_over <- function(ind, cross_prob) {
 # } else {
 #   selected_idx <- sample(seq_len(nrow(fitness)), 2, prob=fitness$f_winter, replace = FALSE)
 # }
+
+
+
+# mutation on the entire population each generation before crossover -----------
+mutate_genome <- function(genomes,mut_prob) {
+  mut_test_mat <- matrix(runif(L*pop_size*2), 
+                         nrow = pop_size * 2, 
+                         ncol = L)
+  mut_pos <- mut_test_mat < mut_prob
+  
+  mut_vals <- matrix(sample(0:1, 50, replace = TRUE), 
+                     nrow = pop_size * 2, 
+                     ncol = L)
+  
+  mut_mat <- mut_vals * mut_pos
+  
+  mat <- matrix(as.numeric(as.matrix(select(genomes, contains("locus")))),
+                nrow = pop_size * 2,
+                ncol = L)
+
+  par_mat <- mat * !mut_pos
+  
+  new_mat <- mut_mat + par_mat
+  strip_names <- select(genomes, -contains("locus"))
+  df <- cbind(strip_names, new_mat)
+  colnames(df) <- colnames(genomes)
+  return(df)
+}
 
 
 
