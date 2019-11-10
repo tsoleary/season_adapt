@@ -17,6 +17,7 @@ init_pop <- function(L, pop_size) {
   return(genome)
 }
 
+
 # Funtion to calculate fitness -------------------------------------------------
 fitness_func <- function(genomes) {
   # long format for dplyr
@@ -48,11 +49,24 @@ fitness_func <- function(genomes) {
 
 # Selecting individuals for the next generation, depends on season
 
+select_inds <- function(genomes,fitness_all, season) {
+  if (season == "summer") { # select 2 parents at random weighted by fitness
+    selected_idx <- sample(seq_len(nrow(fitness_all)), 2, prob=fitness_all$f_summer, replace = FALSE)
+  } else {
+    selected_idx <- sample(seq_len(nrow(fitness_all)), 2, prob=fitness_all$f_winter, replace = FALSE)
+  }
+  temp1 <- selected_idx*2-1
+  temp2 <-selected_idx*2
+  ind1 <- genomes[temp1[1]:temp2[1],] #because we want both chrs
+  ind2 <- genomes[temp1[2]:temp2[2],]
+  selected_individuals <- list(ind1,ind2)
+  return(selected_individuals)
+}
 
-# takes individual with its 2 chromosomes
+# takes individual with its 2 chromosomes, does crossover ----------------------
 cross_over <- function(ind, cross_prob) {
   stripped <- select(ind, contains("locus"))
-  strip_names <- select(ind1, -contains("locus"))
+  strip_names <- select(ind, -contains("locus"))
   cross <- sample(0:1, L, prob = c(1 - cross_prob, cross_prob), replace = TRUE)
   cross_locs <- which(cross == 1)
   for (cross_loc in cross_locs){
@@ -62,17 +76,6 @@ cross_over <- function(ind, cross_prob) {
   }
   return(cbind(strip_names, stripped))
 }
-
-
-
-
-# if (curr_season == "summer") { # select 2 parents at random weighted by fitness
-#   selected_idx <- sample(seq_len(nrow(fitness)), 2, prob=fitness$f_summer, replace = FALSE)
-# } else {
-#   selected_idx <- sample(seq_len(nrow(fitness)), 2, prob=fitness$f_winter, replace = FALSE)
-# }
-
-
 
 # mutation on the entire population each generation before crossover -----------
 mutate_genome <- function(genomes,mut_prob) {
