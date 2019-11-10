@@ -18,6 +18,7 @@ d <- 0.5
 y <- 1
 # recombination rate
 cross_prob <- 0.01
+#mutation rate
 mut_prob <- 0.05 #2*10^(-4)
 
 #site in genome = 0 = summer, 1 = winter
@@ -26,15 +27,15 @@ mut_prob <- 0.05 #2*10^(-4)
 # Initialize Population --------------------------------------------------------
 
 genomes <- init_pop(L, pop_size)
-
 fitness_all <- fitness_func(genomes)
+season <- "summer"
+selected_for_mating <- select_inds(genomes, fitness_all, season)
 mutated_genome <- mutate_genome(genomes,mut_prob) 
 #mutation
-ind1 <- genomes[1:2,]
+ind3 <- genomes[1:2,]
 ind2 <- genomes[3:4,]
 #crossover takes individuals in this format
-ind_test<-cross_over(ind1, cross_prob)
-
+ind_test<-cross_over(selected_for_mating[[1]], cross_prob)
 
 
 
