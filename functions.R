@@ -1,4 +1,4 @@
-# functions for seasonal adaptation model --------------------------------------
+# Seasonal adaptation model functions ------------------------------------------
 
 # Function to initialise population --------------------------------------------
 init_pop <- function(L, pop_size) {
@@ -56,9 +56,11 @@ fitness_func <- function(genomes) {
 
 select_inds <- function(genomes,fitness_all, season) {
   if (season == "summer") { # select 2 parents at random weighted by fitness
-    selected_idx <- sample(seq_len(nrow(fitness_all)), 2, prob=fitness_all$f_summer, replace = FALSE)
+    selected_idx <- sample(seq_len(nrow(fitness_all)), 2, 
+                           prob = fitness_all$f_summer, replace = FALSE)
   } else {
-    selected_idx <- sample(seq_len(nrow(fitness_all)), 2, prob=fitness_all$f_winter, replace = FALSE)
+    selected_idx <- sample(seq_len(nrow(fitness_all)), 2, 
+                           prob = fitness_all$f_winter, replace = FALSE)
   }
   temp1 <- selected_idx*2-1
   temp2 <-selected_idx*2
@@ -68,21 +70,31 @@ select_inds <- function(genomes,fitness_all, season) {
   return(selected_individuals)
 }
 
-# takes individual with its 2 chromosomes, does crossover ----------------------
+# Crossover function that takes a single individual ----------------------------
 cross_over <- function(ind, cross_prob) {
-  stripped <- select(ind, contains("locus"))
-  strip_names <- select(ind, -contains("locus"))
-  cross <- sample(0:1, L, prob = c(1 - cross_prob, cross_prob), replace = TRUE)
+  # select only the loci or only the indiv and chr identifiers
+  loci <- select(ind, contains("locus"))
+  indiv_chr <- select(ind, -contains("locus"))
+  
+  # determine the location(s) for crossover
+  cross <- sample(0:1, 
+                  ncol(loci), 
+                  prob = c(1 - cross_prob, cross_prob), 
+                  replace = TRUE)
   cross_locs <- which(cross == 1)
+  
+  # do crossover at each location 
   for (cross_loc in cross_locs){
-    cross_genome <- stripped[,cross_loc:L]
+    cross_genome <- loci[,cross_loc:ncol(loci)]
     cross_genome[c(1,2), ] <- cross_genome[c(2,1), ]
-    stripped[,cross_loc:L] <- cross_genome
+    loci[,cross_loc:ncol(loci)] <- cross_genome
   }
-  return(as_tibble(cbind(strip_names, stripped)))
+  
+  # add back the indiv and chr identifiers
+  return(as_tibble(cbind(indiv_chr, loci)))
 }
 
-# mutation on the entire population each generation before crossover -----------
+# Mutation on the entire population each generation before crossover -----------
 mutate_genome <- function(genomes, mut_prob) {
   # multiply the mutation probabilty by two (because half the time 0's will 
   # be mutated to 0's and same for 1's)
@@ -111,8 +123,8 @@ mutate_genome <- function(genomes, mut_prob) {
   new_mat <- mut_mat + org_mat
   
   # add indiv and chr identifiers to dataframe
-  strip_names <- select(genomes, -contains("locus"))
-  df <- cbind(strip_names, new_mat)
+  indiv_chr <- select(genomes, -contains("locus"))
+  df <- cbind(indiv_chr, new_mat)
   
   # keep column names the same for the loci
   colnames(df) <- colnames(genomes)
