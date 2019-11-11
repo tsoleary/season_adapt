@@ -18,12 +18,14 @@ d <- 0.5
 y <- 1
 # recombination rate
 cross_prob <- 0.01
-#mutation rate
+# mutation rate
 mut_prob <- 0.05 #2*10^(-4)
-#duration of experiment in years
-years <- 1
-#number of generations in a season
+# duration of experiment in years
+years <- 10
+# number of generations in a season
 generations <- 20
+# balance between seasons (2 is even, less than 2 means more summer, etc.)
+seasonal_balance <- 2
 
 #site in genome = 0 = summer, 1 = winter
 #time of the year = 0 = summer, 1 = winter
@@ -43,26 +45,36 @@ genomes_over_time[1]<-sum(new_overall_genome)
 
 for (year in 1:years){
   for (generation in 1:generations){
-    new_pop <- init_pop(L, pop_size)
+    if (generation < generations / seasonal_balance){
+      season <- "summer"
+    } else {
+      season <- "winter"
+    }
     for (i in 1:pop_size){
+      # 
+      new_pop <- init_pop(L, pop_size, prob_0 = 1, prob_1 = 0)
+      
       selected_for_mating <- select_inds(genomes, fitness_all, season)
-      crossed1<-cross_over(selected_for_mating[[1]], cross_prob)
+      crossed1 <- cross_over(selected_for_mating[[1]], cross_prob)
       new_ind_chr1 <- crossed1[sample(seq_len(nrow(crossed1)), 1),]
+      
       crossed2 <- cross_over(selected_for_mating[[2]], cross_prob)
       new_ind_chr2 <- crossed2[sample(seq_len(nrow(crossed2)), 1),]
+      
       loci1 <- select(new_ind_chr1, contains("locus"))
       loci2 <- select(new_ind_chr2, contains("locus"))
+      
       new_pop[2*i,3:L] <- loci1 #this is not ideal, don't know how to improve
       new_pop[(2*i)-1,3:L] <- loci2
+      
     }
     genomes <- new_pop
     new_overall_genome <- select(genomes, contains("locus"))
     new_overall_genome <-  data.matrix(new_overall_genome, rownames.force = NA) #saving for comparing later
     genomes_over_time[generation]<-sum(new_overall_genome)
     #genomes <- mutate_genome(genomes,mut_prob) 
-    print("one generation has passed")
+    print(paste("year", year, "generation", generation))
   }
-  print("one year has passed")
 }
 
 
