@@ -35,9 +35,11 @@ fitness_all <- fitness_func(genomes) # fitness at time 0
 season <- "summer" # initial season
 
 # Start experiment -------------------------------------------------------------
-start_genomes <- select(genomes, contains("locus"))
-start_genomes <-  data.matrix(start_genomes, rownames.force = NA) #saving for comparing later
-sum(start_genomes)
+genomes_over_time <- vector()
+
+new_overall_genome <- select(genomes, contains("locus"))
+new_overall_genome <-  data.matrix(new_overall_genome, rownames.force = NA) #saving for comparing later
+genomes_over_time[1]<-sum(new_overall_genome)
 
 for (year in 1:years){
   for (generation in 1:generations){
@@ -54,17 +56,17 @@ for (year in 1:years){
       new_pop[(2*i)-1,3:L] <- loci2
     }
     genomes <- new_pop
+    new_overall_genome <- select(genomes, contains("locus"))
+    new_overall_genome <-  data.matrix(new_overall_genome, rownames.force = NA) #saving for comparing later
+    genomes_over_time[generation]<-sum(new_overall_genome)
     #genomes <- mutate_genome(genomes,mut_prob) 
     print("one generation has passed")
   }
   print("one year has passed")
 }
 
-end_genomes <- select(genomes, contains("locus"))
-end_genomes <-  data.matrix(end_genomes, rownames.force = NA) #saving for comparing later
-sum(end_genomes)
 
-
-
+plot(genomes_over_time, ylab="Number of allele 1 in population", xlab="Number of generations")
+lines(genomes_over_time)
 
 
