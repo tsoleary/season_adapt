@@ -9,7 +9,7 @@ source("functions.R")
 
 # Parameters -------------------------------------------------------------------
 # number of loci in a genome
-L <- 100
+L <- 10
 # population size 
 pop_size <- 100
 # dominance
@@ -23,7 +23,7 @@ mut_prob <- 0.05 #2*10^(-4)
 # duration of experiment in years
 years <- 1
 # number of generations in a season
-generations <- 50
+generations <- 100
 # balance between seasons (2 is even, less than 2 means more summer, etc.)
 seasonal_balance <- 2
 
@@ -44,11 +44,11 @@ genomes_over_time[1]<-sum(new_overall_genome)
 
 for (year in 1:years){
   for (generation in 1:generations){
-    # if (generation < generations / seasonal_balance){
-    #   season <- "summer"
-    # } else {
-    #   season <- "winter"
-    # }
+    if (generation < generations / seasonal_balance){
+      season <- "summer"
+    } else {
+      season <- "winter"
+    }
     new_pop <- init_pop(L, pop_size) #prob_0 = 1, prob_1 = 0)
     for (i in 1:pop_size){
       selected_for_mating <- select_inds(genomes, fitness_all, season)
@@ -71,6 +71,7 @@ for (year in 1:years){
     fitness_all <- fitness_func(genomes)
     #genomes <- mutate_genome(genomes,mut_prob) 
     print(paste("year", year, "generation", generation))
+    print(season)
   }
 }
 
