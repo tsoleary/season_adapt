@@ -1,11 +1,11 @@
 # Seasonal adaptation model functions ------------------------------------------
 
 # Function to initialise population --------------------------------------------
-init_pop <- function(L, pop_size) {
+init_pop <- function(L, pop_size, prob_0 = 0.5, prob_1 = 0.5) {
   # initialize diploid chromosomes with a random population
   genome <- matrix(sample(0:1, 2*L*pop_size, 
                           replace = TRUE, 
-                          prob = c(0.5, 0.5)), 
+                          prob = c(prob_0, prob_1)), 
                    nrow = pop_size * 2, 
                    ncol = L)
   
