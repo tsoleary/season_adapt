@@ -53,9 +53,9 @@ for (year in 1:years){
     }
     # create an empty population data frame with all zeros
     new_pop <- init_pop(L, pop_size, prob_0 = 1, prob_1 = 0)
+    fitness_all <- fitness_func(genomes)
     for (i in 1:pop_size){
       # select parents based on fitness
-      fitness_all <- fitness_func(genomes)
       selected_for_mating <- select_inds(genomes, fitness_all, season)
       # cross chromosomes of parents
       crossed1 <- cross_over(selected_for_mating[[1]], cross_prob)
