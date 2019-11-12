@@ -9,7 +9,7 @@ source("functions.R")
 
 # Parameters -------------------------------------------------------------------
 # number of loci in a genome
-L <- 10
+L <- 50
 # population size 
 pop_size <- 100
 # dominance
@@ -17,13 +17,13 @@ d <- 0.5
 # exponent of the fitness function? epistasis parameter or something?
 y <- 1
 # recombination rate
-cross_prob <- 0
+cross_prob <- 0.03
 # mutation rate
 mut_prob <- 0.05 #2*10^(-4)
 # duration of experiment in years
-years <- 1
+years <- 5
 # number of generations in a season
-generations <- 100
+generations <- 50
 # balance between seasons (2 is even, less than 2 means more summer, etc.)
 seasonal_balance <- 2
 
@@ -41,6 +41,8 @@ genomes_over_time <- vector()
 new_overall_genome <- select(genomes, contains("locus"))
 new_overall_genome <-  data.matrix(new_overall_genome, rownames.force = NA) #saving for comparing later
 genomes_over_time[1]<-sum(new_overall_genome)
+
+G <- 1
 
 for (year in 1:years){
   for (generation in 1:generations){
@@ -67,16 +69,19 @@ for (year in 1:years){
     genomes <- new_pop
     new_overall_genome <- select(genomes, contains("locus"))
     new_overall_genome <-  data.matrix(new_overall_genome, rownames.force = NA) #saving for comparing later
-    genomes_over_time[generation]<-sum(new_overall_genome)
+    genomes_over_time[G]<-sum(new_overall_genome)
     fitness_all <- fitness_func(genomes)
-    #genomes <- mutate_genome(genomes,mut_prob) 
+    genomes <- mutate_genome(genomes,mut_prob) 
     print(paste("year", year, "generation", generation))
     print(season)
+    G <- G + 1
+    print(G)
   }
 }
 
 
 plot(genomes_over_time, ylab="Number of allele 1 in population", xlab="Number of generations")
 lines(genomes_over_time)
+
 
 
