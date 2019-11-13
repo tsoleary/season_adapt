@@ -30,8 +30,6 @@ seasonal_balance <- 2
 
 #site in genome = 1 = summer, 0 = winter
 
-start <- proc.time()
-
 # Initialize Population --------------------------------------------------------
 
 genomes <- init_pop(L, pop_size) 
@@ -94,12 +92,6 @@ for (year in 1:years){
   }
 }
 
-time_elapsed <- proc.time() - start
-
-# plot(genomes_over_time, ylab = "Number of allele 1 in population", 
-#      xlab = "Number of generations")
-# lines(genomes_over_time)
-
 colnames(freq_df)[2:3] <- c("freq_G.0", "freq_G.1")
 
 x <- freq_df %>% 
@@ -108,9 +100,21 @@ x <- freq_df %>%
                values_to = "freqs")
 x$genz <- as.numeric(str_extract(x$genz, "[:digit:]+"))
 
-# ashsdf
+# plotting
 ggplot(x, mapping = aes(x = genz, y = freqs, color = loci)) + 
-  geom_line()
+  geom_line() +
+  labs(title = "Loci specific allele frequencies over time",
+       caption = paste(paste("Generations per season", generations),
+                        paste("Pop size", pop_size),
+                        paste("Seasonal Balance", seasonal_balance),
+                        paste("Number of Loci", L),
+                        paste("Dominance", d),
+                        paste("Epistasis", y), sep = "; ")) +
+  xlab("Generations") +
+  ylab("Freq of Summer Allele") + 
+  theme_classic() +
+  theme(legend.position = "none")
+
 
 
 
