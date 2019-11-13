@@ -137,6 +137,14 @@ mutate_genome <- function(genomes, mut_prob) {
   return(as_tibble(df))
 }
 
-
+# Calculate loci specific frequencies 
+get_freqs <- function(genomes, G){
+  genomes %>%
+    pivot_longer(cols = contains("locus"), 
+                 names_to = "loci", 
+                 values_to = "allele") %>%
+    group_by(loci) %>%
+    summarize(freq_1 = sum(as.numeric(allele)) / (pop_size * 2))
+}
 
 
