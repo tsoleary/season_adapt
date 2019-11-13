@@ -4,6 +4,7 @@ require(stringr)
 require(tibble)
 require(tidyr)
 require(dplyr)
+require(ggplot2)
 
 source("functions.R")
 
@@ -21,9 +22,9 @@ cross_prob <- 0.03
 # mutation rate
 mut_prob <- 1*10^(-4)
 # duration of experiment in years
-years <- 20
+years <- 2
 # number of generations in a season
-generations <- 20
+generations <- 10
 # balance between seasons (2 is even, less than 2 means more summer, etc.)
 seasonal_balance <- 2
 
@@ -34,6 +35,7 @@ start <- proc.time()
 # Initialize Population --------------------------------------------------------
 
 genomes <- init_pop(L, pop_size) 
+freq_df <- get_freqs(genomes)
 
 # Start experiment -------------------------------------------------------------
 genomes_over_time <- vector()
@@ -71,10 +73,15 @@ for (year in 1:years){
     }
     genomes <- new_pop
     
-    # get a sum of all 1 alleles in the population for each generation
-    new_overall_genome <- select(genomes, contains("locus"))
-    new_overall_genome <-  data.matrix(new_overall_genome, rownames.force = NA) 
-    genomes_over_time[G]<-sum(new_overall_genome)
+    freq_temp <- get_freqs(genomes)
+    freq_df <- full_join(freq_df, freq_temp, by = "loci")
+    colnames(freq_df)[which(colnames(freq_df) == "freq_1")] <- 
+      paste0("freq_1_G.", G)
+    
+    # # get a sum of all 1 alleles in the population for each generation
+    # new_overall_genome <- select(genomes, contains("locus"))
+    # new_overall_genome <-  data.matrix(new_overall_genome, rownames.force = NA) 
+    # genomes_over_time[G]<-sum(new_overall_genome)
 
     
     # mutate genomes for the next year
@@ -89,9 +96,20 @@ for (year in 1:years){
 
 time_elapsed <- proc.time() - start
 
-plot(genomes_over_time, ylab = "Number of allele 1 in population", 
-     xlab = "Number of generations")
-lines(genomes_over_time)
+# plot(genomes_over_time, ylab = "Number of allele 1 in population", 
+#      xlab = "Number of generations")
+# lines(genomes_over_time)
+
+colnames(freq_df)[2:3] <- c("freq_1_G.0", "freq_1_G.1")
+
+freq_df %>% 
+  pivot_longer(cols = contains("freq"), 
+               names_to = "genz", 
+               values_to = "freqs") %>%
+  separate(genz, into = c("stuff", "gens"), sep = ".")
+
+# ashsdf
+ggplot(freq_df, mapping = aes(x = ))
 
 
 
