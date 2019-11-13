@@ -94,14 +94,14 @@ for (year in 1:years){
 
 colnames(freq_df)[2:3] <- c("freq_G.0", "freq_G.1")
 
-x <- freq_df %>% 
+loci_freq <- freq_df %>% 
   pivot_longer(cols = contains("freq"), 
                names_to = "genz", 
                values_to = "freqs")
-x$genz <- as.numeric(str_extract(x$genz, "[:digit:]+"))
+loci_freq$genz <- as.numeric(str_extract(loci_freq$genz, "[:digit:]+"))
 
-# plotting
-ggplot(x, mapping = aes(x = genz, y = freqs, color = loci)) + 
+# plot inidividual loci frequencies over time
+ggplot(loci_freq, mapping = aes(x = genz, y = freqs, color = loci)) + 
   geom_line() +
   labs(title = "Loci specific allele frequencies over time",
        caption = paste(paste("Generations per season", generations),
@@ -116,5 +116,22 @@ ggplot(x, mapping = aes(x = genz, y = freqs, color = loci)) +
   theme(legend.position = "none")
 
 
+# plot average allele frequencies over time
+avg_freq <- loci_freq %>%
+  group_by(genz) %>%
+  summarize(freqs  = mean(freqs))
 
+ggplot(avg_freq, mapping = aes(x = genz, y = freqs)) + 
+  geom_line() +
+  labs(title = "Total summer allele frequency over time",
+       caption = paste(paste("Generations per season", generations),
+                       paste("Pop size", pop_size),
+                       paste("Seasonal Balance", seasonal_balance),
+                       paste("Number of Loci", L),
+                       paste("Dominance", d),
+                       paste("Epistasis", y), sep = "; ")) +
+  xlab("Generations") +
+  ylab("Freq of Summer Allele") + 
+  theme_classic() +
+  theme(legend.position = "none")
 
