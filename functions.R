@@ -41,13 +41,13 @@ fitness_func <- function(genomes) {
   z_score <- geno_count %>%
     pivot_wider(names_from = geno, values_from = n) %>%
     rename("geno_0" = "0", "geno_1" = "1", "geno_2" = "2") %>%
-    mutate(z_winter = geno_0 + geno_1 * d,
-           z_summer = geno_2 + geno_1 * d)
+    mutate(z_winter = geno_0, # + geno_1 * d,
+           z_summer = geno_2) # + geno_1 * d)
   
   # heterozygote effect
-  # z_score[is.na(z_score)] <- 0
-  # z_score["z_winter"] <- z_score["z_winter"] + z_score["geno_1"]*d
-  # z_score["z_summer"] <- z_score["z_summer"] + z_score["geno_1"]*d
+  z_score[is.na(z_score)] <- 0
+  z_score["z_winter"] <- z_score["z_winter"] + z_score["geno_1"]*d
+  z_score["z_summer"] <- z_score["z_summer"] + z_score["geno_1"]*d
   
   # fitness of each individual
   fitness <- z_score %>%
