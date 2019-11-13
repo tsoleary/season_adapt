@@ -36,11 +36,6 @@ genomes <- init_pop(L, pop_size)
 freq_df <- get_freqs(genomes)
 
 # Start experiment -------------------------------------------------------------
-genomes_over_time <- vector()
-
-new_overall_genome <- select(genomes, contains("locus"))
-new_overall_genome <-  data.matrix(new_overall_genome, rownames.force = NA)
-genomes_over_time[1] <- sum(new_overall_genome)
 
 G <- 1
 
@@ -75,12 +70,6 @@ for (year in 1:years){
     freq_df <- full_join(freq_df, freq_temp, by = "loci")
     colnames(freq_df)[which(colnames(freq_df) == "freq_1")] <- 
       paste0("freq_G.", G)
-    
-    # # get a sum of all 1 alleles in the population for each generation
-    # new_overall_genome <- select(genomes, contains("locus"))
-    # new_overall_genome <-  data.matrix(new_overall_genome, rownames.force = NA) 
-    # genomes_over_time[G]<-sum(new_overall_genome)
-
     
     # mutate genomes for the next year
     genomes <- mutate_genome(genomes, mut_prob)
