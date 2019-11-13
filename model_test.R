@@ -24,7 +24,7 @@ mut_prob <- 1*10^(-4)
 # duration of experiment in years
 years <- 2
 # number of generations in a season
-generations <- 10
+generations <- 50
 # balance between seasons (2 is even, less than 2 means more summer, etc.)
 seasonal_balance <- 2
 
@@ -76,7 +76,7 @@ for (year in 1:years){
     freq_temp <- get_freqs(genomes)
     freq_df <- full_join(freq_df, freq_temp, by = "loci")
     colnames(freq_df)[which(colnames(freq_df) == "freq_1")] <- 
-      paste0("freq_1_G.", G)
+      paste0("freq_G.", G)
     
     # # get a sum of all 1 alleles in the population for each generation
     # new_overall_genome <- select(genomes, contains("locus"))
@@ -100,16 +100,17 @@ time_elapsed <- proc.time() - start
 #      xlab = "Number of generations")
 # lines(genomes_over_time)
 
-colnames(freq_df)[2:3] <- c("freq_1_G.0", "freq_1_G.1")
+colnames(freq_df)[2:3] <- c("freq_G.0", "freq_G.1")
 
-freq_df %>% 
+x <- freq_df %>% 
   pivot_longer(cols = contains("freq"), 
                names_to = "genz", 
-               values_to = "freqs") %>%
-  separate(genz, into = c("stuff", "gens"), sep = ".")
+               values_to = "freqs")
+x$genz <- as.numeric(str_extract(x$genz, "[:digit:]+"))
 
 # ashsdf
-ggplot(freq_df, mapping = aes(x = ))
+ggplot(x, mapping = aes(x = genz, y = freqs, color = loci)) + 
+  geom_line()
 
 
 
