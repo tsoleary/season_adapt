@@ -147,4 +147,69 @@ get_freqs <- function(genomes, G){
     summarize(freq_1 = sum(as.numeric(allele)) / (pop_size * 2))
 }
 
+# Simulation -------------------------------------------------------------------
+
+run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years, 
+                           generations, seasonal_balance) {
+  # Initialize Population 
+  
+  genomes <- init_pop(L, pop_size) 
+  freq_df <- get_freqs(genomes)
+  
+  # Start experiment
+  G <- 1
+  for (year in 1:years){
+    for (generation in 1:generations){
+      if (generation < generations / seasonal_balance){
+        season <- "summer"
+      } else {
+        season <- "winter"
+      }
+      # create an empty population data frame with all zeros
+      new_pop <- init_pop(L, pop_size, prob_0 = 1, prob_1 = 0)
+      fitness_all <- fitness_func(genomes)
+      for (i in 1:pop_size){
+        # select parents based on fitness
+        selected_for_mating <- select_inds(genomes, fitness_all, season)
+        # cross chromosomes of parents
+        crossed1 <- cross_over(selected_for_mating[[1]], cross_prob)
+        new_ind_chr1 <- crossed1[sample(seq_len(nrow(crossed1)), 1),]
+        crossed2 <- cross_over(selected_for_mating[[2]], cross_prob)
+        new_ind_chr2 <- crossed2[sample(seq_len(nrow(crossed2)), 1),]
+        
+        loci1 <- select(new_ind_chr1, contains("locus"))
+        loci2 <- select(new_ind_chr2, contains("locus"))
+        
+        new_pop[2*i, which(grepl("locus", colnames(new_pop)))] <- loci1 
+        new_pop[(2*i)-1, which(grepl("locus", colnames(new_pop)))] <- loci2
+      }
+      genomes <- new_pop
+      
+      freq_temp <- get_freqs(genomes)
+      freq_df <- full_join(freq_df, freq_temp, by = "loci")
+      colnames(freq_df)[which(colnames(freq_df) == "freq_1")] <- 
+        paste0("freq_G.", G)
+      
+      # mutate genomes for the next year
+      genomes <- mutate_genome(genomes, mut_prob)
+      
+      # print information to keep track of simulation progress
+      print(paste("year", year, "generation", generation, "season", season,
+                  "total generation", G))
+      G <- G + 1
+    }
+  }
+  
+  colnames(freq_df)[2:3] <- c("freq_G.0", "freq_G.1")
+  
+  loci_freq <- freq_df %>% 
+    pivot_longer(cols = contains("freq"), 
+                 names_to = "genz", 
+                 values_to = "freqs")
+  loci_freq$genz <- as.numeric(str_extract(loci_freq$genz, "[:digit:]+"))
+  
+  return(loci_freq)
+}
+
+
 
