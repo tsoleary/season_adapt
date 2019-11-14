@@ -8,119 +8,26 @@ require(ggplot2)
 
 source("functions.R")
 
-# Parameters -------------------------------------------------------------------
-# number of loci in a genome
-L <- 50
-# population size 
-pop_size <- 100
-# dominance
-d <- 0.5
-# exponent of the fitness function
-y <- 1
-# recombination rate
-cross_prob <- 0.03
-# mutation rate
-mut_prob <- 1*10^(-4)
-# duration of experiment in years
-years <- 2
-# number of generations in a season
-generations <- 50
-# balance between seasons (2 is even, less than 2 means more summer, etc.)
-seasonal_balance <- 2
+# Parameter definitions --------------------------------------------------------
+# L is the number of loci in a genome
+# pop_size is the population size 
+# d is the dominance parameter of the heterozygote
+# y is the exponent of the fitness function
+# cross_prob is the recombination rate
+# mut_prob is the mutation rate
+# years is the duration of experiment in years
+# generations is the number of generations in a season
+# seasonal_balance is the balance between seasons
+#      (2 = even; < 2 more summer; > 2 more winter)
 
-#site in genome = 1 = summer, 0 = winter
-
-# Initialize Population --------------------------------------------------------
-
-genomes <- init_pop(L, pop_size) 
-freq_df <- get_freqs(genomes)
-
-# Start experiment -------------------------------------------------------------
-
-G <- 1
-
-for (year in 1:years){
-  for (generation in 1:generations){
-    if (generation < generations / seasonal_balance){
-      season <- "summer"
-    } else {
-      season <- "winter"
-    }
-    # create an empty population data frame with all zeros
-    new_pop <- init_pop(L, pop_size, prob_0 = 1, prob_1 = 0)
-    fitness_all <- fitness_func(genomes)
-    for (i in 1:pop_size){
-      # select parents based on fitness
-      selected_for_mating <- select_inds(genomes, fitness_all, season)
-      # cross chromosomes of parents
-      crossed1 <- cross_over(selected_for_mating[[1]], cross_prob)
-      new_ind_chr1 <- crossed1[sample(seq_len(nrow(crossed1)), 1),]
-      crossed2 <- cross_over(selected_for_mating[[2]], cross_prob)
-      new_ind_chr2 <- crossed2[sample(seq_len(nrow(crossed2)), 1),]
-      
-      loci1 <- select(new_ind_chr1, contains("locus"))
-      loci2 <- select(new_ind_chr2, contains("locus"))
-      
-      new_pop[2*i, which(grepl("locus", colnames(new_pop)))] <- loci1 
-      new_pop[(2*i)-1, which(grepl("locus", colnames(new_pop)))] <- loci2
-    }
-    genomes <- new_pop
-    
-    freq_temp <- get_freqs(genomes)
-    freq_df <- full_join(freq_df, freq_temp, by = "loci")
-    colnames(freq_df)[which(colnames(freq_df) == "freq_1")] <- 
-      paste0("freq_G.", G)
-    
-    # mutate genomes for the next year
-    genomes <- mutate_genome(genomes, mut_prob)
-    
-    # print information to keep track of simulation progress
-    print(paste("year", year, "generation", generation, "season", season,
-                "total generation", G))
-    G <- G + 1
-  }
-}
-
-colnames(freq_df)[2:3] <- c("freq_G.0", "freq_G.1")
-
-loci_freq <- freq_df %>% 
-  pivot_longer(cols = contains("freq"), 
-               names_to = "genz", 
-               values_to = "freqs")
-loci_freq$genz <- as.numeric(str_extract(loci_freq$genz, "[:digit:]+"))
-
-# plot inidividual loci frequencies over time
-ggplot(loci_freq, mapping = aes(x = genz, y = freqs, color = loci)) + 
-  geom_line() +
-  labs(title = "Loci specific allele frequencies over time",
-       caption = paste(paste("Generations per season", generations),
-                        paste("Pop size", pop_size),
-                        paste("Seasonal Balance", seasonal_balance),
-                        paste("Number of Loci", L),
-                        paste("Dominance", d),
-                        paste("Epistasis", y), sep = "; ")) +
-  xlab("Generations") +
-  ylab("Freq of Summer Allele") + 
-  theme_classic() +
-  theme(legend.position = "none")
-
-
-# plot average allele frequencies over time
-avg_freq <- loci_freq %>%
-  group_by(genz) %>%
-  summarize(freqs  = mean(freqs))
-
-ggplot(avg_freq, mapping = aes(x = genz, y = freqs)) + 
-  geom_line() +
-  labs(title = "Total summer allele frequency over time",
-       caption = paste(paste("Generations per season", generations),
-                       paste("Pop size", pop_size),
-                       paste("Seasonal Balance", seasonal_balance),
-                       paste("Number of Loci", L),
-                       paste("Dominance", d),
-                       paste("Epistasis", y), sep = "; ")) +
-  xlab("Generations") +
-  ylab("Freq of Summer Allele") + 
-  theme_classic() +
-  theme(legend.position = "none")
+# Run a simulation -------------------------------------------------------------
+sim_results <- run_simulation(L = 50, 
+                              pop_size = 100,
+                              d = 0.5,
+                              y = 1, 
+                              cross_prob = 0.03,
+                              mut_prob = 1*10^(-4),
+                              years = 2,
+                              generations = 5,
+                              seasonal_balance = 2)
 
