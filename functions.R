@@ -23,7 +23,7 @@ init_pop <- function(L, pop_size, prob_0 = 0.5, prob_1 = 0.5) {
 
 
 # Funtion to calculate fitness -------------------------------------------------
-fitness_func <- function(genomes) {
+fitness_func <- function(genomes, d, y) {
   # creates the diploid genotypes: 0 (homo 00), 1 (het), or 2 (homo 11)
   genotype <- genomes %>%
     pivot_longer(cols = contains("locus"), 
@@ -137,14 +137,44 @@ mutate_genome <- function(genomes, mut_prob) {
   return(as_tibble(df))
 }
 
-# Calculate loci specific frequencies 
-get_freqs <- function(genomes, G){
+# Calculate loci specific frequencies ------------------------------------------
+get_freqs <- function(genomes, pop_size){
   genomes %>%
     pivot_longer(cols = contains("locus"), 
                  names_to = "loci", 
                  values_to = "allele") %>%
     group_by(loci) %>%
     summarize(freq_1 = sum(as.numeric(allele)) / (pop_size * 2))
+}
+
+# Plotting allele frequencies overtime -----------------------------------------
+
+plot_freq <- function(loci_freq, type = "loci", figure_caption) {
+  if (type == "avg"){
+    avg_freq <- loci_freq %>%
+      group_by(genz) %>%
+      summarize(freqs  = mean(freqs))
+    
+    g <- ggplot(avg_freq, mapping = aes(x = genz, y = freqs)) + 
+      geom_line() +
+      labs(title = "Total summer allele frequency over time",
+           caption = figure_caption) +
+      xlab("Generations") +
+      ylab("Freq of Summer Allele") + 
+      theme_classic() +
+      theme(legend.position = "none")
+  } else {
+    plot_df <- loci_freq
+    g <- ggplot(plot_df, mapping = aes(x = genz, y = freqs, color = loci)) + 
+      geom_line() +
+      labs(title = "Loci specific allele frequencies over time",
+           caption = figure_caption)+
+      xlab("Generations") +
+      ylab("Freq of Summer Allele") + 
+      theme_classic() +
+      theme(legend.position = "none")
+  }
+  return(g)
 }
 
 # Simulation -------------------------------------------------------------------
@@ -154,9 +184,8 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
   # Initialize Population 
   
   genomes <- init_pop(L, pop_size) 
-  freq_df <- get_freqs(genomes)
+  freq_df <- get_freqs(genomes, pop_size)
   
-  # Start experiment
   G <- 1
   for (year in 1:years){
     for (generation in 1:generations){
@@ -167,7 +196,7 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
       }
       # create an empty population data frame with all zeros
       new_pop <- init_pop(L, pop_size, prob_0 = 1, prob_1 = 0)
-      fitness_all <- fitness_func(genomes)
+      fitness_all <- fitness_func(genomes, d, y)
       for (i in 1:pop_size){
         # select parents based on fitness
         selected_for_mating <- select_inds(genomes, fitness_all, season)
@@ -185,7 +214,7 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
       }
       genomes <- new_pop
       
-      freq_temp <- get_freqs(genomes)
+      freq_temp <- get_freqs(genomes, pop_size)
       freq_df <- full_join(freq_df, freq_temp, by = "loci")
       colnames(freq_df)[which(colnames(freq_df) == "freq_1")] <- 
         paste0("freq_G.", G)
@@ -208,8 +237,19 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
                  values_to = "freqs")
   loci_freq$genz <- as.numeric(str_extract(loci_freq$genz, "[:digit:]+"))
   
+  caption <- paste(paste("Generations per season", generations),
+                   paste("Pop size", pop_size),
+                   paste("Seasonal Balance", seasonal_balance),
+                   paste("Number of Loci", L),
+                   paste("Dominance", d),
+                   paste("Epistasis", y), sep = "; ")
+  
+  g1 <- plot_freq(loci_freq, figure_caption = caption)
+  print(g1)
+  g2 <- plot_freq(loci_freq, type = "avg", figure_caption = caption)
+  print(g2)
+  
   return(loci_freq)
 }
-
 
 
