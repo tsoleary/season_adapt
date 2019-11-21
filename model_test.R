@@ -33,7 +33,6 @@ sim_results <- run_simulation(L = 50,
 
 
 
-
 numreps <- 1
 d <- c(0.2, 0.5, 0.7)
 sim_results <- sim()
@@ -51,3 +50,4 @@ run_simulation(L = 5,
   
   }
 }
+
