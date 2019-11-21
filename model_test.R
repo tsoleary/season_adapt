@@ -31,3 +31,5 @@ sim_results <- run_simulation(L = 50,
                               generations = 5,
                               seasonal_balance = 2)
 
+test
+
