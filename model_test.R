@@ -31,3 +31,23 @@ sim_results <- run_simulation(L = 50,
                               generations = 5,
                               seasonal_balance = 2)
 
+
+
+
+numreps <- 1
+d <- c(0.2, 0.5, 0.7)
+sim_results <- sim()
+for (i in 1:numreps){
+  for (k in 1:d){
+run_simulation(L = 5, 
+                                   pop_size = 10,
+                                   d = k,
+                                   y = 1, 
+                                   cross_prob = 0.03,
+                                   mut_prob = 1*10^(-4),
+                                   years = 2,
+                                   generations = 5,
+                                   seasonal_balance = 2)
+  
+  }
+}
