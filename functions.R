@@ -283,7 +283,7 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
 }
 
 # Simulation -------------------------------------------------------------------
-run_simulation2 <- function(L, pop_size, d, y, cross_prob, mut_prob, years, 
+run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years, 
                            generations, seasonal_balance) {
   # Initialize Population 
   
@@ -348,6 +348,18 @@ run_simulation2 <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
   print(g1)
   g2 <- plot_freq(loci_freq, type = "avg", figure_caption = caption)
   print(g2)
+  
+  file_names <- paste("results",
+                      "G", generations, 
+                      "Ps", pop_size,
+                      "Sb", seasonal_balance,
+                      "L", L,
+                      "d", d,
+                      "y", y,
+                      "c", cross_prob,
+                      sep = "_")
+  
+  write.csv(sim_results,paste0(file_names, ".csv"), row.names = FALSE)
   
   return(loci_freq)
 }
