@@ -101,7 +101,7 @@ cross_over <- function(parent) {
 
 # cross over parents at the same time ------------------------------------------
 cross_over_parents <- function(parent1, parent2) {
-
+  
   p1_xover <- cross_over(parent1)#, genomes, cross_prob)
   p2_xover <- cross_over(parent2)#, genomes, cross_prob)
   
@@ -141,19 +141,19 @@ mutate_genome <- function(genomes, mut_prob) {
   
   # determine mutation positions with a random uniform distribution
   mut_pos <- matrix(runif(genome_length * total_chr), 
-                         nrow = total_chr, 
-                         ncol = genome_length) < mut_prob_2
+                    nrow = total_chr, 
+                    ncol = genome_length) < mut_prob_2
   
   # mutation values (with zeros where the original values are located)
   mut_mat <- matrix(sample(0:1, genome_length, replace = TRUE), 
-                     nrow = total_chr, 
-                     ncol = genome_length) * mut_pos
+                    nrow = total_chr, 
+                    ncol = genome_length) * mut_pos
   
   # original values (with zeros where the mutated values are located)
   org_mat <- matrix(as.numeric(as.matrix(select(genomes, contains("locus")))),
-                nrow = total_chr, 
-                ncol = genome_length) * !mut_pos
-
+                    nrow = total_chr, 
+                    ncol = genome_length) * !mut_pos
+  
   # combine matrices by addition
   new_mat <- mut_mat + org_mat
   
@@ -284,7 +284,7 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
 
 # Simulation -------------------------------------------------------------------
 run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years, 
-                           generations, seasonal_balance) {
+                           generations, seasonal_balance, rep) {
   # Initialize Population 
   
   individual <- paste("indiv", 
@@ -309,7 +309,7 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
       fitness_all <- fitness_func(genomes, d, y)
       
       df <- parent_selection(genomes, fitness_all, season)
-
+      
       new_pop <- map2_df(df[[1]], df[[2]], cross_over_parents)
       
       genomes <- cbind(individual, new_pop)
@@ -338,11 +338,11 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
   loci_freq$genz <- as.numeric(str_extract(loci_freq$genz, "[:digit:]+"))
   
   caption <<- paste(paste("Generations per year", generations),
-                   paste("Pop size", pop_size),
-                   paste("Seasonal Balance", seasonal_balance),
-                   paste("Number of Loci", L),
-                   paste("Dominance", d),
-                   paste("Epistasis", y), sep = "; ")
+                    paste("Pop size", pop_size),
+                    paste("Seasonal Balance", seasonal_balance),
+                    paste("Number of Loci", L),
+                    paste("Dominance", d),
+                    paste("Epistasis", y), sep = "; ")
   
   g1 <- plot_freq(loci_freq, figure_caption = caption)
   print(g1)
@@ -357,10 +357,12 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
                       "d", d,
                       "y", y,
                       "c", cross_prob,
+                      "num_rep", rep,
                       sep = "_")
   
-  write.csv(sim_results,paste0(file_names, ".csv"), row.names = FALSE)
+  write.csv(loci_freq, paste0(file_names, ".csv"), row.names = FALSE)
   
   return(loci_freq)
 }
+
 
