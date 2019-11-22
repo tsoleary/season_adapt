@@ -56,23 +56,6 @@ fitness_func <- function(genomes, d, y) {
   return(fitness)
 }
 
-# Selecting individuals for the next generation, depends on season -------------
-select_inds <- function(genomes, fitness_all, season) {
-  if (season == "summer") { # select 2 parents at random weighted by fitness
-    selected_idx <- sample(seq_len(nrow(fitness_all)), 2, 
-                           prob = fitness_all$f_summer, replace = FALSE)
-  } else {
-    selected_idx <- sample(seq_len(nrow(fitness_all)), 2, 
-                           prob = fitness_all$f_winter, replace = FALSE)
-  }
-  temp1 <- selected_idx*2-1
-  temp2 <-selected_idx*2
-  ind1 <- genomes[temp1[1]:temp2[1],] #because we want both chrs
-  ind2 <- genomes[temp1[2]:temp2[2],]
-  selected_individuals <- list(ind1,ind2)
-  return(selected_individuals)
-}
-
 # Crossover function that takes a single individual ----------------------------
 cross_over <- function(parent) {
   loci <- genomes %>%
@@ -210,80 +193,6 @@ plot_freq <- function(loci_freq, type = "loci", figure_caption) {
 
 # Simulation -------------------------------------------------------------------
 run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years, 
-                           generations, seasonal_balance) {
-  # Initialize Population 
-  
-  genomes <- init_pop(L, pop_size) 
-  freq_df <- get_freqs(genomes, pop_size)
-  
-  G <- 1
-  for (year in 1:years){
-    for (generation in 1:generations){
-      if (generation < generations / seasonal_balance){
-        season <- "summer"
-      } else {
-        season <- "winter"
-      }
-      # create an empty population data frame with all zeros
-      new_pop <- init_pop(L, pop_size, prob_0 = 1, prob_1 = 0)
-      fitness_all <- fitness_func(genomes, d, y)
-      for (i in 1:pop_size){
-        # select parents based on fitness
-        selected_for_mating <- select_inds(genomes, fitness_all, season)
-        # cross chromosomes of parents
-        crossed1 <- cross_over(selected_for_mating[[1]], cross_prob)
-        new_ind_chr1 <- crossed1[sample(seq_len(nrow(crossed1)), 1),]
-        crossed2 <- cross_over(selected_for_mating[[2]], cross_prob)
-        new_ind_chr2 <- crossed2[sample(seq_len(nrow(crossed2)), 1),]
-        
-        loci1 <- select(new_ind_chr1, contains("locus"))
-        loci2 <- select(new_ind_chr2, contains("locus"))
-        
-        new_pop[2*i, which(grepl("locus", colnames(new_pop)))] <- loci1 
-        new_pop[(2*i)-1, which(grepl("locus", colnames(new_pop)))] <- loci2
-      }
-      genomes <- new_pop
-      
-      freq_temp <- get_freqs(genomes, pop_size)
-      freq_df <- full_join(freq_df, freq_temp, by = "loci")
-      colnames(freq_df)[which(colnames(freq_df) == "freq_1")] <- 
-        paste0("freq_G.", G)
-      
-      # mutate genomes for the next year
-      genomes <- mutate_genome(genomes, mut_prob)
-      
-      # print information to keep track of simulation progress
-      print(paste("year", year, "generation", generation, "season", season,
-                  "total generation", G))
-      G <- G + 1
-    }
-  }
-  
-  colnames(freq_df)[2:3] <- c("freq_G.0", "freq_G.1")
-  
-  loci_freq <- freq_df %>% 
-    pivot_longer(cols = contains("freq"), 
-                 names_to = "genz", 
-                 values_to = "freqs")
-  loci_freq$genz <- as.numeric(str_extract(loci_freq$genz, "[:digit:]+"))
-  
-  caption <- paste(paste("Generations per year", generations),
-                   paste("Pop size", pop_size),
-                   paste("Seasonal Balance", seasonal_balance),
-                   paste("Number of Loci", L),
-                   paste("Dominance", d),
-                   paste("Epistasis", y), sep = "; ")
-  
-  g1 <- plot_freq(loci_freq, figure_caption = caption)
-  print(g1)
-  g2 <- plot_freq(loci_freq, type = "avg", figure_caption = caption)
-  print(g2)
-  
-  return(loci_freq)
-}
-
-# Simulation -------------------------------------------------------------------
-run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years, 
                            generations, seasonal_balance, rep) {
   # Initialize Population 
   
@@ -337,17 +246,17 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
                  values_to = "freqs")
   loci_freq$genz <- as.numeric(str_extract(loci_freq$genz, "[:digit:]+"))
   
-  caption <<- paste(paste("Generations per year", generations),
-                    paste("Pop size", pop_size),
-                    paste("Seasonal Balance", seasonal_balance),
-                    paste("Number of Loci", L),
-                    paste("Dominance", d),
-                    paste("Epistasis", y), sep = "; ")
-  
-  g1 <- plot_freq(loci_freq, figure_caption = caption)
-  print(g1)
-  g2 <- plot_freq(loci_freq, type = "avg", figure_caption = caption)
-  print(g2)
+  # caption <<- paste(paste("Generations per year", generations),
+  #                   paste("Pop size", pop_size),
+  #                   paste("Seasonal Balance", seasonal_balance),
+  #                   paste("Number of Loci", L),
+  #                   paste("Dominance", d),
+  #                   paste("Epistasis", y), sep = "; ")
+  # 
+  # g1 <- plot_freq(loci_freq, figure_caption = caption)
+  # print(g1)
+  # g2 <- plot_freq(loci_freq, type = "avg", figure_caption = caption)
+  # print(g2)
   
   file_names <- paste("results",
                       "G", generations, 
@@ -362,7 +271,7 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
   
   write.csv(loci_freq, paste0(file_names, ".csv"), row.names = FALSE)
   
-  return(loci_freq)
+  #return(loci_freq)
 }
 
 
