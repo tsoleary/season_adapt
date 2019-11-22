@@ -21,15 +21,25 @@ source("functions.R")
 #      (2 = even; < 2 more summer; > 2 more winter)
 
 # Run a simulation -------------------------------------------------------------
-sim_results <- run_simulation(L = 50, 
-                              pop_size = 100,
-                              d = 0.5,
-                              y = 1, 
-                              cross_prob = 0.03,
-                              mut_prob = 1*10^(-4),
-                              years = 2,
-                              generations = 5,
-                              seasonal_balance = 2)
+tictoc::tic()
+numreps <- 2
+d <- c(0.2, 0.5, 0.7)
+for (k in d){
+  for (i in 1:numreps){
+    run_simulation(L = 50, 
+                   pop_size = 100,
+                   d = k,
+                   y = 1, 
+                   cross_prob = 0.03,
+                   mut_prob = 1*10^(-4),
+                   years = 1,
+                   generations = 20,
+                   seasonal_balance = 2,
+                   rep = i)
+    
+  }
+}
+tictoc::toc()
 
 
 
