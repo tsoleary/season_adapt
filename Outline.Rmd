@@ -1,0 +1,42 @@
+---
+title: "Outline"
+author: "Thomas O'Leary, Csenge Petak, Alison Hall"
+date: "11/22/2019"
+output: pdf_document
+---
+**Abstract** 
+
+The abstract will introduce the paper by Wittman et al. that instigated this 
+study. They present a term called "segregation lift" which describes 
+instances of seasonal allele-fluctuations which may maintain genetic diversity. 
+Wittman et al., build a model that exhibits how allelic dominance changes according to the season in a diploid organism to account for different seasonal life-history strategies. The authors present the parameter d, a dominance metric which enciroporates fitness with the seasonal score to allow the dominance to be tracked as it fluctuates according to season. Wittman et al. conclude that d must be greater than 0.5 allows for a "beneficial reversal of dominance" in which heterozygous intermediates are more fit. 
+
+Also present hypothesis here and main results
+
+
+
+**Introduction**
+
+- Begin by introducing why we should care about environmental fluctuation and seasonal fitness, how that is projected to grow more and more extreme, and how this study fits into that concept (importance of genetic diversity)
+- How this study fits into/differs from research of dominance/heterozygote advantage (clarify this)
+- Describe the original concept of seasonal selection in more detail. 
+- Present seasonal score  
+- Introduce why we changed the parameters that we changed, and how we predicted that segregation lift would be affected. (seasonal score, dominance, generations, population size, y fitness exponent, L loci )
+
+**Methods** 
+
+
+**Results**
+Figure 1: Loci specific allele frequencies over time. 
+  We have a preliminary version of this graph created and it shows how the frequency of a seasonal allele changes over generations at d=0.5, which suggests that d=0.5 may be sufficient to maintain polymorphism. 
+  we plan to run the model over break and change parameters to try to detect how they affect seasonal switches in dominance 
+
+  
+Figure 2: A graph encorporating fitness fluctuations?
+  
+
+**Conclusion**
+
+We will interpret the results here!
+How does this fit into the broader research
+
