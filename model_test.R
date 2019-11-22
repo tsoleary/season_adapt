@@ -1,6 +1,10 @@
 # seasonal adaptation modeling -------------------------------------------------
 
-require(tidyverse)
+require(stringr) 
+require(tibble)
+require(tidyr)
+require(dplyr)
+require(ggplot2)
 
 source("functions.R")
 
@@ -18,20 +22,22 @@ source("functions.R")
 
 # Run a simulation -------------------------------------------------------------
 tictoc::tic()
-sim_results <- run_simulation(L = 50, 
-                              pop_size = 100,
-                              d = 0.5,
-                              y = 1, 
-                              cross_prob = 0.03,
-                              mut_prob = 1*10^(-4),
-                              years = 1,
-                              generations = 20,
-                              seasonal_balance = 2)
+numreps <- 2
+d <- c(0.2, 0.5, 0.7)
+for (k in d){
+  for (i in 1:numreps){
+    run_simulation(L = 50, 
+                   pop_size = 100,
+                   d = k,
+                   y = 1, 
+                   cross_prob = 0.03,
+                   mut_prob = 1*10^(-4),
+                   years = 1,
+                   generations = 20,
+                   seasonal_balance = 2,
+                   rep = i)
+    
+  }
+}
 tictoc::toc()
-sim_clean <- sim_results %>%
-  filter(genz %% 10 == 0)
-
-plot_freq(sim_clean, figure_caption = "")
-plot_freq(sim_clean, type = "avg", figure_caption = "")
-
 
