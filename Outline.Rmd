@@ -18,6 +18,8 @@ Also present hypothesis here and main results
 **Introduction**
 
 - Begin by introducing why we should care about environmental fluctuation and seasonal fitness, how that is projected to grow more and more extreme, and how this study fits into that concept (importance of genetic diversity)
+  -seasonal fluctuation has been shown to maintain polymorphisms, but hoe often is this really able to occur. 
+  -"marginal overdominance occurs when when the heterozygote has the highest geometric mean fitness, though in one particular generation the homozygote may be most fit" (witt), and seasonal fluctuations are capable of maintaining these advantages (novak)This novak paper found that linkage disequilibrium was required to maintain genetic polymorphims though
 - How this study fits into/differs from research of dominance/heterozygote advantage (clarify this)
 - Describe the original concept of seasonal selection in more detail. 
 - Present seasonal score  
