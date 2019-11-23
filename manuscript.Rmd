@@ -1,0 +1,26 @@
+---
+title: "Seasonal Adaptation"
+author: \emph{Thomas O'Leary, Csenge Petak, Alison Hall}
+date: "11/23/2019"
+output: pdf_document
+bibliography: refs.bib
+---
+
+
+# Abstract
+
+
+# Introduction
+Something about an orchard in Pennsylvania [@Bergland2014]. As an example of how to cite.
+
+# Methods
+
+
+# Results
+
+
+# Discussion
+
+
+# References
+
