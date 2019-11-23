@@ -22,20 +22,16 @@ source("functions.R")
 #      (2 = even; < 2 more summer; > 2 more winter)
 
 # Run a simulation -------------------------------------------------------------
-tictoc::tic()
+
 numreps <- 20
 d <- c(0.2, 0.5, 0.8) #Tom
 num_generations <- c(10,20,50) #Tom
-cross_over_nums <- c(0.01, 0.05, 0.1, 0.5) #Csenge
-pops <- c(100,1000,10000) #Alison
-y <- c(0.5,1.0,2.0) #Alison
-seas_bal <- c(1.25,1.5,2.0) #Csenge
 
 for (k in d){
   for (i in 1:numreps){
     run_simulation(L = 250, 
                    pop_size = 1000,
-                   d = 0.5,
+                   d = k,
                    y = 1, 
                    cross_prob = 0.05,
                    mut_prob = 1*10^(-4),
@@ -46,7 +42,21 @@ for (k in d){
     
   }
 }
-tictoc::toc()
+for (k in num_generations){
+  for (i in 1:numreps){
+    run_simulation(L = 250, 
+                   pop_size = 1000,
+                   d = 0.5,
+                   y = 1, 
+                   cross_prob = 0.05,
+                   mut_prob = 1*10^(-4),
+                   years = 300,
+                   generations = k,
+                   seasonal_balance = 2,
+                   rep = i)
+    
+  }
+}
 
 #default parameters
 # 
