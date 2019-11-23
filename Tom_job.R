@@ -23,19 +23,19 @@ source("functions.R")
 
 # Run a simulation -------------------------------------------------------------
 
-numreps <- 20
+numreps <- 2
 d <- c(0.2, 0.5, 0.8) #Tom
 num_generations <- c(10,20,50) #Tom
 
 for (k in d){
   for (i in 1:numreps){
-    run_simulation(L = 250, 
-                   pop_size = 1000,
+    run_simulation(L = 100, 
+                   pop_size = 500,
                    d = k,
                    y = 1, 
                    cross_prob = 0.05,
                    mut_prob = 1*10^(-4),
-                   years = 300,
+                   years = 100,
                    generations = 20,
                    seasonal_balance = 2,
                    rep = i)
@@ -44,13 +44,13 @@ for (k in d){
 }
 for (k in num_generations){
   for (i in 1:numreps){
-    run_simulation(L = 250, 
-                   pop_size = 1000,
+    run_simulation(L = 100, 
+                   pop_size = 500,
                    d = 0.5,
                    y = 1, 
                    cross_prob = 0.05,
                    mut_prob = 1*10^(-4),
-                   years = 300,
+                   years = 100,
                    generations = k,
                    seasonal_balance = 2,
                    rep = i)
@@ -58,16 +58,4 @@ for (k in num_generations){
   }
 }
 
-#default parameters
-# 
-# (L = 250, 
-#   pop_size = 1000,
-#   d = 0.5,
-#   y = 1, 
-#   cross_prob = 0.05,
-#   mut_prob = 1*10^(-4),
-#   years = 300,
-#   generations = 20,
-#   seasonal_balance = 2,
-#   rep = i)
 
