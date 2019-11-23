@@ -5,6 +5,7 @@ require(tibble)
 require(tidyr)
 require(dplyr)
 require(ggplot2)
+require(purrr)
 
 source("functions.R")
 
