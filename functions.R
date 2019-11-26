@@ -196,7 +196,8 @@ get_freqs <- function(genomes, pop_size){
 }
 
 # Plotting allele frequencies overtime -----------------------------------------
-plot_freq <- function(loci_freq, type = "loci", figure_caption) {
+plot_freq <- function(loci_freq, type = "loci", figure_caption,
+                      fig_title = "Loci specific allele frequencies over time"){
   if (type == "avg"){
     avg_freq <- loci_freq %>%
       group_by(genz) %>%
@@ -204,7 +205,7 @@ plot_freq <- function(loci_freq, type = "loci", figure_caption) {
     
     g <- ggplot(avg_freq, mapping = aes(x = genz, y = freqs)) + 
       geom_line() +
-      labs(title = "Total summer allele frequency over time",
+      labs(title = fig_title,
            caption = figure_caption) +
       xlab("Generations") +
       ylab("Freq of Summer Allele") + 
@@ -215,7 +216,7 @@ plot_freq <- function(loci_freq, type = "loci", figure_caption) {
     plot_df <- loci_freq
     g <- ggplot(plot_df, mapping = aes(x = genz, y = freqs, color = loci)) + 
       geom_line() +
-      labs(title = "Loci specific allele frequencies over time",
+      labs(title = fig_title,
            caption = figure_caption)+
       xlab("Generations") +
       ylab("Freq of Summer Allele") + 
