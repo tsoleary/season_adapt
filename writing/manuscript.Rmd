@@ -1,0 +1,69 @@
+---
+title: "Seasonal Adaptation"
+author: \emph{Thomas O'Leary, Csenge Petak, Alison Hall}
+date: "11/23/2019"
+output: pdf_document
+bibliography: refs.bib
+header-includes:
+   - \usepackage{graphicx}
+---
+
+
+# Abstract
+
+
+# Introduction
+Something about an orchard in Pennsylvania [@Bergland2014]. As an example of how to cite.
+
+# Methods
+
+### Basic Model
+
+The method for calculating fitness is based on the work of @Wittmann2017 who originally proposed “segregation lift” as a general mechanism which may maintain balanced polymorphisms in a population under certain conditions. 
+
+The model first determines an individual's seasonal score ($z$) according to the equation: write equations later :) 
+
+where $n_{homo}$ is the number loci homozygous for the allele particular to that certain season and $d$ is a dominance parameter (which ranges between 0 and 1) and $n_{het}$ is the number of heterozygous loci. A dominance parameter of greater than one ($d > 1$) would correspond to a traditional heterozygote advantage, and therefore is not of interest in this model.
+
+The model we propose differs from the _segregation lift model_ in a few important ways. For one, the loci in our model are located on diploid linked chromosomes, so the homologous pairs can recombine during a simulated meiosis before mating. Expand on why this may be interesting or important… Linked genes not require a $d > 0.5$. Some genes that may be important for seasonal traits (_i.e._ heat shock proteins) are located close to each other on chromosomes and have a high amount of linkage disequilibrium… 
+
+Our model also does not allow for “selfing” where an individual can asexually reproduce with itself to create an offspring… Other stufff maybe too
+
+
+
+| Default Parameters               |      |
+|----------------------------------|------|
+| Crossover probability            | 0.05 |
+| Mutation probability             | 10   |
+| Population size                  | 500  |
+| Number of loci                   | 100  |
+| Exponent of the fitness function | 1    |
+| Dominance                        | 0.5  |
+| Years                            | 100  |
+| Generations per year             | 20   |
+| Seasonal balance                 | 2    |
+
+### Simulated seasonal selection 
+
+The general outline for the seasonal selection simulation:
+
+1. A population of $N$ individuals is created with a single diploid chromosome containing $L$ loci, all of which contribute to the individual’s seasonal fitness. 
+2. Seasonal score is calculated according to Eqn 1 and the fitness is determined
+Pairs of parents – of size $N$ – are sampled stochasticly with a probability proportional to their seasonal fitness. 
+3. Each parent in the pair undergoes recombination with a per locus recombination rate of $P_c$ 
+4. A chromosome from each parent is selected at random to create the diploid offsprings 
+5. The new generation replaces the old generation in the population.
+6. The new individuals undergo mutation with a per locus mutation probability $P_m$ which was fixed at the relatively high rate of 1x10^-14 [@Haag-Liautard2007]. 
+7. A new generation begins and the current season is determined by the current generation and seasonal balance parameter $S_b$. 
+8. A new generation of parents is selected according to their seasonal fitness and the process continues to cycle for a number of years.
+9. Loci specific allele frequencies are tracked throughout the simulated evolutionary run.
+
+
+# Results
+
+
+# Discussion
+
+
+# References
+

@@ -93,6 +93,41 @@ cross_over_parents <- function(parent1, parent2) {
   
 }
 
+
+# uniform crossover function ---------------------------------------------------
+cross_over_uniform <- function(parent) {
+  loci <- genomes %>%
+    filter(.$individual == as.character(parent)) %>%
+    select(contains("locus"))
+  
+  # determine the location(s) for crossover
+  cross <- sample(1:2, 
+                  ncol(loci), 
+                  prob = c(0.5, 0.5), 
+                  replace = TRUE)
+  
+  new_chr <- vector(mode = "double", length = ncol(loci))
+  for (i in 1:length(cross)){
+    new_chr[i] <- as.numeric(loci[cross[i], i])
+  }
+  
+  names(new_chr) <- names(loci)
+  
+  return(new_chr)
+}
+
+# cross over parents at the same time ------------------------------------------
+cross_over_parents_uniform <- function(parent1, parent2) {
+  
+  p1_xover <- cross_over_uniform(parent1)
+  p2_xover <- cross_over_uniform(parent2)
+  
+  new_chr <- as_tibble(rbind(p1_xover, p2_xover))
+  bind_cols("chr" = c("chr_1", "chr_2"), new_chr)
+  
+}
+
+
 # Parent selection -------------------------------------------------------------
 parent_selection <- function(genomes, fitness_all, season){
   if (season == "summer"){
@@ -161,7 +196,8 @@ get_freqs <- function(genomes, pop_size){
 }
 
 # Plotting allele frequencies overtime -----------------------------------------
-plot_freq <- function(loci_freq, type = "loci", figure_caption) {
+plot_freq <- function(loci_freq, type = "loci", figure_caption,
+                      fig_title = "Loci specific allele frequencies over time"){
   if (type == "avg"){
     avg_freq <- loci_freq %>%
       group_by(genz) %>%
@@ -169,7 +205,7 @@ plot_freq <- function(loci_freq, type = "loci", figure_caption) {
     
     g <- ggplot(avg_freq, mapping = aes(x = genz, y = freqs)) + 
       geom_line() +
-      labs(title = "Total summer allele frequency over time",
+      labs(title = fig_title,
            caption = figure_caption) +
       xlab("Generations") +
       ylab("Freq of Summer Allele") + 
@@ -180,7 +216,7 @@ plot_freq <- function(loci_freq, type = "loci", figure_caption) {
     plot_df <- loci_freq
     g <- ggplot(plot_df, mapping = aes(x = genz, y = freqs, color = loci)) + 
       geom_line() +
-      labs(title = "Loci specific allele frequencies over time",
+      labs(title = fig_title,
            caption = figure_caption)+
       xlab("Generations") +
       ylab("Freq of Summer Allele") + 
@@ -275,3 +311,86 @@ run_simulation <- function(L, pop_size, d, y, cross_prob, mut_prob, years,
 }
 
 
+
+# simulation with uniform crossover --------------------------------------------
+run_simulation_uniform <- function(L, pop_size, d, y, cross_prob, mut_prob, 
+                                   years, generations, seasonal_balance, rep) {
+  # Initialize Population 
+  
+  individual <- paste("indiv", 
+                      str_pad(rep(1:pop_size, each = 2), 
+                              6, "0", side = "left"), 
+                      sep = "_")
+  
+  cross_prob <<- cross_prob
+  genomes <<- init_pop(L, pop_size) 
+  freq_df <- get_freqs(genomes, pop_size)
+  
+  G <- 1
+  for (year in 1:years){
+    for (generation in 1:generations){
+      if (generation < generations / seasonal_balance){
+        season <- "summer"
+      } else {
+        season <- "winter"
+      }
+      # create an empty population data frame with all zeros
+      new_pop <- init_pop(L, pop_size, prob_0 = 1, prob_1 = 0)
+      fitness_all <- fitness_func(genomes, d, y)
+      
+      df <- parent_selection(genomes, fitness_all, season)
+      
+      new_pop <- map2_df(df[[1]], df[[2]], cross_over_parents_uniform)
+      
+      genomes <- cbind(individual, new_pop)
+      
+      freq_temp <- get_freqs(genomes, pop_size)
+      freq_df <- full_join(freq_df, freq_temp, by = "loci")
+      colnames(freq_df)[which(colnames(freq_df) == "freq_1")] <- 
+        paste0("freq_G.", G)
+      
+      # mutate genomes for the next year
+      genomes <<- mutate_genome(genomes, mut_prob)
+      
+      # print information to keep track of simulation progress
+      print(paste("year", year, "generation", generation, "season", season,
+                  "total generation", G))
+      G <- G + 1
+    }
+  }
+  
+  colnames(freq_df)[2:3] <- c("freq_G.0", "freq_G.1")
+  
+  loci_freq <- freq_df %>% 
+    pivot_longer(cols = contains("freq"), 
+                 names_to = "genz", 
+                 values_to = "freqs")
+  loci_freq$genz <- as.numeric(str_extract(loci_freq$genz, "[:digit:]+"))
+  
+  # caption <<- paste(paste("Generations per year", generations),
+  #                   paste("Pop size", pop_size),
+  #                   paste("Seasonal Balance", seasonal_balance),
+  #                   paste("Number of Loci", L),
+  #                   paste("Dominance", d),
+  #                   paste("Epistasis", y), sep = "; ")
+  # 
+  # g1 <- plot_freq(loci_freq, figure_caption = caption)
+  # print(g1)
+  # g2 <- plot_freq(loci_freq, type = "avg", figure_caption = caption)
+  # print(g2)
+  
+  file_names <- paste("results",
+                      "G", generations, 
+                      "Ps", pop_size,
+                      "Sb", seasonal_balance,
+                      "L", L,
+                      "d", d,
+                      "y", y,
+                      "c", cross_prob,
+                      "num_rep", rep,
+                      sep = "_")
+  
+  write.csv(loci_freq, paste0(file_names, ".csv"), row.names = FALSE)
+  
+  #return(loci_freq)
+}
