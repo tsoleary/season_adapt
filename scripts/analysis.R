@@ -6,10 +6,10 @@ require(rlist)
 source(here::here("functions.R"))
 
 # set working directory to the results folder of interest
-setwd(here::here("results/generations"))
+setwd(here::here("results/generation"))
 
 # get a list of the files that match the variable value of interest
-value <- "G_20"
+value <- "G_50"
 
 # which rep do you want to look at? 
 rep <- 3
@@ -42,9 +42,14 @@ sim_results %>%
   filter(genz < 2000 & genz %% 10 == 0) %>%
   plot_freq(figure_caption = caption, fig_title = value)
 
+sim_results %>%
+  filter(loci %in% as.character(sample(unique(sim_results$loci), 10, replace = FALSE))) %>%
+  filter(genz > 2000 & genz < 2100 & genz %% 10 == 0) %>%
+  plot_freq(figure_caption = caption, fig_title = value)
+
 # plot results between genz 500 and 600
 sim_results %>%
-  filter(genz > 900 & genz < 1000) %>%
+  filter(genz > 2800 & genz < 3000) %>%
   plot_freq(figure_caption = caption, fig_title = value)
 
 
@@ -69,8 +74,8 @@ sd(sim_results$freqs)
 
 # COMPARE different parameters ----------------------------------------------------------------
 
-setwd(here::here("results/generations"))
-values = c("G_10","G_20","G_50") #this needs to be of length 3 and of increasing order
+setwd(here::here("results/cross_over"))
+values = c("c_0_","c_0.1","c_0.5") #this needs to be of length 3 and of increasing order
 do_analysis(values) #first boxplot = means, second boxplot = standard deviation, categories appear
                     #in the order you put it in the values variable above
                     #also gives you 3 ANOVA: first means, second standard deviation, third ratio of fixed loci
