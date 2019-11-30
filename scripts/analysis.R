@@ -88,49 +88,21 @@ do_analysis(values) #first boxplot = means, second boxplot = standard deviation,
 # set working directory to the results folder of interest
 setwd(here::here("results/dominance"))
 
-# filter only the final generation
-
-tbl <- list.files(pattern = value) %>% 
-  map_df(~read_plus(.))
-
-
-
+# load all files and filter only the final generation
 all_tbl <- list.files() %>% 
-  map_df(~read_plus(.))
-
-read_plus <- function(flnm) {
-  read_csv(flnm) %>% 
-    mutate(filename = flnm)
-}
-
-p <- all_tbl %>%
+  map_df(~read_plus(.)) %>%
   filter(genz == max(genz)) 
-
-y <- all_tbl %>% 
-  pivot_wider(
-    names_from = filename,
-    values_from = freqs) %>%
-  select(contains("d_0.8"))
-
-colors <- c(rep("#e25dbb", 5), 
-            rep("#6cdf4c", 5),
-            rep("#258bd2", 5))
-
 
 # plot the density distribution
 ggplot(p, aes(x = freqs, fill = filename)) +
   geom_density(alpha = 0.2) + 
-  scale_fill_manual(values = colors,
+  scale_fill_manual(values = c(rep("#e25dbb", 5), 
+                               rep("#6cdf4c", 5),
+                               rep("#258bd2", 5)),
                     breaks = unique(all_tbl$filename)[c(1,6,11)],
                     name = "Dominance",
                     labels = c("0.2", "0.5", "0.8")) +
   ylab("Density") + 
   xlab("Allele Frequency") +
   theme_classic()
-  
 
-x <- shapiro.test(p$freqs)
-
-x$p.value
-
-# so load all five reps, label them with another column and then group them and stack on top of eachother
