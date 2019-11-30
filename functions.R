@@ -487,3 +487,9 @@ do_analysis <- function(values){
   ) 
 }
 
+# read csv and save file name for tbl in map_df --------------------------------
+read_plus <- function(flnm) {
+  read_csv(flnm) %>% 
+    mutate(filename = flnm)
+}
+
