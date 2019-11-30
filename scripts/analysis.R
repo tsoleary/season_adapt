@@ -94,19 +94,20 @@ all_tbl <- list.files() %>%
 
 tbl_max_gen <- all_tbl %>%
   split(.$filename) %>%
-  map(function(.data){filter(.data, genz == max(genz))})
+  map(function(.data){filter(.data, genz == max(genz))}) %>%
+  do.call("rbind", .)
 
 # plot the density distribution
-ggplot(all_tbl, aes(x = freqs, fill = filename)) +
+ggplot(tbl_max_gen, aes(x = freqs, fill = filename)) +
   geom_density(alpha = 0.2) + 
   scale_fill_manual(values = c(rep("#e25dbb", 5), 
                                rep("#6cdf4c", 5),
                                rep("#258bd2", 5)),
                     breaks = unique(all_tbl$filename)[c(1,6,11)],
                     # legend name
-                    name = "Epistasis",
+                    name = "Generations\nper year",
                     # values tested
-                    labels = c("0.5", "1", "2")) +
+                    labels = c("10", "20", "50")) +
   ylab("Density") + 
   xlab("Allele Frequency") +
   theme_classic()
