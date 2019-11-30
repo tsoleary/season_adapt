@@ -86,7 +86,7 @@ do_analysis(values) #first boxplot = means, second boxplot = standard deviation,
 # histogram and density plots --------------------------------------------------
 
 # set working directory to the results folder of interest
-setwd(here::here("results/dominance"))
+setwd(here::here("results/generations"))
 
 # load all files and filter only the final generation
 all_tbl <- list.files() %>% 
@@ -94,13 +94,15 @@ all_tbl <- list.files() %>%
   filter(genz == max(genz)) 
 
 # plot the density distribution
-ggplot(p, aes(x = freqs, fill = filename)) +
+ggplot(all_tbl, aes(x = freqs, fill = filename)) +
   geom_density(alpha = 0.2) + 
   scale_fill_manual(values = c(rep("#e25dbb", 5), 
                                rep("#6cdf4c", 5),
                                rep("#258bd2", 5)),
                     breaks = unique(all_tbl$filename)[c(1,6,11)],
+                    # legend name
                     name = "Dominance",
+                    # values tested
                     labels = c("0.2", "0.5", "0.8")) +
   ylab("Density") + 
   xlab("Allele Frequency") +
