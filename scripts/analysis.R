@@ -90,8 +90,11 @@ setwd(here::here("results/generations"))
 
 # load all files and filter only the final generation
 all_tbl <- list.files() %>% 
-  map_df(~read_plus(.)) %>%
-  filter(genz == max(genz)) 
+  map_df(~read_plus(.)) 
+
+tbl_max_gen <- all_tbl %>%
+  split(.$filename) %>%
+  map(function(.data){filter(.data, genz == max(genz))})
 
 # plot the density distribution
 ggplot(all_tbl, aes(x = freqs, fill = filename)) +
@@ -101,9 +104,9 @@ ggplot(all_tbl, aes(x = freqs, fill = filename)) +
                                rep("#258bd2", 5)),
                     breaks = unique(all_tbl$filename)[c(1,6,11)],
                     # legend name
-                    name = "Dominance",
+                    name = "Epistasis",
                     # values tested
-                    labels = c("0.2", "0.5", "0.8")) +
+                    labels = c("0.5", "1", "2")) +
   ylab("Density") + 
   xlab("Allele Frequency") +
   theme_classic()
