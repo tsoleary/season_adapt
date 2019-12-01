@@ -17,6 +17,12 @@ Also present hypothesis here and main results
 
 **Introduction**
 
+Quantitative genetic theory suggests that plasticity occurs in response to selective pressure exerted by environmental heterogeneity (cooper).  Phenotypic plasticity is especially beneficial in variable environments because genetic variability allows for adaptation to changing conditions (Gulisija). Fluctuating selection can maintain polymorphisms in seasonal environments if strong selective pressure towards both homozygous genotypes varies seasonally (novak, bergland). Understanding the role of seasonality on adaptation can allow more accurate predictions to be made about the capacity for organisms to adapt to climate change conditions (fournier-level). 
+  There has been some debate regarding whether balancing selection is capable of maintaining genetic polymorphisms in highly variable environments, and it is often thought that  (Asthana, Hedrick). However a study by Bergland et al (2014) observing Drosophila melanogaster in a temperate Pennsyvanian orchard revealed that strong seasonal selection can drive balancing selection favoring different life history traits over a short time span. These results suggest that seasonal variation contributes to the maintenance of two alleles to be present at the same loci long-term.  
+  Wittmann et al, (2017) created a model building from Bergland et al to clarify the role of seasonal selection plays in maintaining multilocus polymorphisms. This model introduces the term “segregation lift” which considers the importance of dominance in maintaining polymorphism across many loci in the genome.
+
+
+
 - Begin by introducing why we should care about environmental fluctuation and seasonal fitness, how that is projected to grow more and more extreme, and how this study fits into that concept (importance of genetic diversity)
   -seasonal fluctuation has been shown to maintain polymorphisms, but hoe often is this really able to occur. 
   -"marginal overdominance occurs when when the heterozygote has the highest geometric mean fitness, though in one particular generation the homozygote may be most fit" (witt), and seasonal fluctuations are capable of maintaining these advantages (novak)This novak paper found that linkage disequilibrium was required to maintain genetic polymorphims though
