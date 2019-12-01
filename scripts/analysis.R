@@ -74,11 +74,9 @@ sd(sim_results$freqs)
 
 # COMPARE different parameters ----------------------------------------------------------------
 
-setwd(here::here("results/cross_over"))
-values = c("c_0_", "c_0.001_", "c_0.01","c_0.05", "c_0.1","d_0.5_y_1_c_0.5_") #this needs to be of length 3 and of increasing order
-do_analysis(values, "cross_over") #first boxplot = means, second boxplot = standard deviation, categories appear
-                    #in the order you put it in the values variable above
-                    #also gives you 3 ANOVA: first means, second standard deviation, third ratio of fixed loci
+setwd(here::here("results/dominance"))
+values = c("d_0.2", "d_0.5", "d_0.8")
+do_analysis(values, "Dominance") # Dominance is going to be the x axis label
 
 
 
