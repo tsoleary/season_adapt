@@ -394,3 +394,107 @@ run_simulation_uniform <- function(L, pop_size, d, y, cross_prob, mut_prob,
   
   #return(loci_freq)
 }
+
+# analysis & ANOVA plotting function -------------------------------------------
+do_analysis <- function(values, test_name){
+  
+  files = c()
+  for (value in values){
+    file <- list.files()[grep(value, list.files())]
+    files <- list.append(files, file) #contains all the files regarding your parameter in the correct order
+  }
+  
+  sim_results <- vector(mode = "list", length = length(values))
+  i = 1
+  for (f in files){
+    sim_result <- read.csv(f)
+    sim_results[i] <- list(sim_result) #contains all dataframes of your parameter
+    i <- i+1
+  }
+  
+  maximums <- c()
+  for (rep in sim_results){
+    maximums <- list.append(maximums, max(rep$genz)) #this ensures that the minimum of all the maximum generations is used for analysis
+  }
+  
+#------------------------------------------------------------------------------------------------------
+  
+  means <- c()
+  standard_devs <- c()
+  for (rep in sim_results){
+    temp <- rep[rep$genz == min(maximums),] #check that all have same max generation!
+    means <- list.append(means, mean(temp$freqs))
+    standard_devs <- list.append(standard_devs, sd(temp$freqs))
+  }
+  
+  lm <- length(means)/5 #number of parameters to compare
+  t <- list(1:lm)
+  
+#Calculating means--------------------------------------------------------------------------------------
+  
+  x <- data.frame("Categories" = sort(rep.int(as.numeric(unlist(t)),5)),
+                  "Means" = means)
+  
+  ANOVAofmeans <- aov(x$Means ~ x$Categories)
+  print(summary(ANOVAofmeans))
+  
+  v_names = c()
+  p_colors = c("gray", "blue", "green", "yellow", "red", "orange", "purple", "white", "black", "pink")
+  v_colors = c()
+  c <- 1
+  for (v in values){
+    v_names <- list.append(v_names, v)
+    v_colors <- list.append(v_colors, p_colors[c])
+    c <- c + 1
+  }
+  
+  boxplot(x$Means ~ x$Categories,
+          ylab="Mean loci frequency",
+          xlab= test_name,
+          names= v_names,
+          col= v_colors
+  )
+  
+#Calculating standard deviation-------------------------------------------------------------------------
+  
+  y <- data.frame("Categories" = sort(rep.int(as.numeric(unlist(t)),5)), "SD" = standard_devs)
+  
+  ANOVAofsds <- aov(y$SD ~ y$Categories)
+  print(summary(ANOVAofsds))
+  
+  boxplot(y$SD ~ y$Categories,
+          ylab="Standard deviation of loci frequencies",
+          xlab= test_name,
+          names= v_names,
+          col= v_colors
+  )
+  
+#Calculating fixed proportions---------------------------------------------------------------------------
+  
+  fixed <- c()
+  for (rep in sim_results){
+    temp <- rep[rep$genz == min(maximums),] #check that all have same max!
+    temp <- round(temp$freqs, digits = 1) #round to 1 digit so that 0.99 would be considered fixed
+    fixed <- list.append(fixed, length(which(temp==0 | temp == 1))/length(temp))
+  }
+  
+  z <- data.frame("Categories" = sort(rep.int(as.numeric(unlist(t)),5)), "Fix" = fixed)
+  
+  ANOVAoffixs <- aov(z$Fix ~ z$Categories)
+  print(summary(ANOVAoffixs))
+  
+  boxplot(z$Fix ~ z$Categories,
+          ylab="Proportion of fixed loci",
+          xlab= test_name,
+          names= v_names,
+          col= v_colors
+  )
+  
+}
+
+# read csv and save file name for tbl in map_df --------------------------------
+read_plus <- function(flnm) {
+  read_csv(flnm) %>% 
+    mutate(filename = flnm)
+}
+

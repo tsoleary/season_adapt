@@ -9,7 +9,7 @@ source(here::here("functions.R"))
 setwd(here::here("results/generations"))
 
 # get a list of the files that match the variable value of interest
-value <- "G_20"
+value <- "G_50"
 
 # which rep do you want to look at? 
 rep <- 3
@@ -42,9 +42,14 @@ sim_results %>%
   filter(genz < 2000 & genz %% 10 == 0) %>%
   plot_freq(figure_caption = caption, fig_title = value)
 
+sim_results %>%
+  filter(loci %in% as.character(sample(unique(sim_results$loci), 10, replace = FALSE))) %>%
+  filter(genz > 2000 & genz < 2100 & genz %% 10 == 0) %>%
+  plot_freq(figure_caption = caption, fig_title = value)
+
 # plot results between genz 500 and 600
 sim_results %>%
-  filter(genz > 900 & genz < 1000) %>%
+  filter(genz > 2800 & genz < 3000) %>%
   plot_freq(figure_caption = caption, fig_title = value)
 
 
@@ -69,94 +74,39 @@ sd(sim_results$freqs)
 
 # COMPARE different parameters ----------------------------------------------------------------
 
-setwd(here::here("results/generations"))
-values = c("G_10","G_20","G_50") #this needs to be of length 3 and of increasing order
-do_analysis(values) #first boxplot = means, second boxplot = standard deviation, categories appear
-                    #in the order you put it in the values variable above
-                    #also gives you 3 ANOVA: first means, second standard deviation, third ratio of fixed loci
+setwd(here::here("results/dominance"))
+values = c("d_0.2", "d_0.5", "d_0.8")
+do_analysis(values, "Dominance") # Dominance is going to be the x axis label
 
-#first run function below, then call it
-do_analysis <- function(values){
-  
-  files = c()
-  for (value in values){
-    file <- list.files()[grep(value, list.files())]
-    files <- list.append(files, file) #contains all the files regarding your parameter in the correct order
-  }
-  
-  sim_results <- vector(mode = "list", length = 15)
-  i = 1
-  for (f in files){
-    sim_result <- read.csv(f)
-    sim_results[i] <- list(sim_result) #contains all dataframes of your parameter (length = 15)
-    i <- i+1
-  }
-  
-  maximums <- c()
-  for (rep in sim_results){
-    maximums <- list.append(maximums, max(rep$genz)) #this ensures that the minimum of all the maximum generations is used for analysis
-  }
-    
-  means <- c()
-  standard_devs <- c()
-  for (rep in sim_results){
-    temp <- rep[rep$genz == min(maximums),] #check that all have same max generation!
-    means <- list.append(means, mean(temp$freqs))
-    standard_devs <- list.append(standard_devs, sd(temp$freqs))
-  }
-  
-  means1 <- means[1:5] #means of loci frequency when parameter = first input value
-  means2 <- means[6:10] #means of loci frequency when parameter = second input value
-  means3 <- means[11:15] #means of loci frequency when parameter = third input value
-  
-  x <- data.frame("Categories" = c("Means1","Means1","Means1","Means1","Means1","Means2","Means2","Means2","Means2","Means2","Means3","Means3","Means3","Means3","Means3"), "Means" = c(means1,means2,means3))
-  
-  ANOVAofmeans <- aov(x$Means ~ x$Categories)
-  print(summary(ANOVAofmeans))
-  
-  boxplot(x$Means ~ x$Categories,
-          ylab="Mean loci frequency",
-          xlab= "Dominance values", #REPLACE THIS
-          names=c("d = 0.2","d = 0.5","d = 0.8"), #REPLACE THIS
-          col= c("gray", "blue", "green")
-  )
-  
-  sd1 <- standard_devs[1:5] 
-  sd2 <- standard_devs[6:10] 
-  sd3 <- standard_devs[11:15]
-  
-  y <- data.frame("Categories" = c("SD1","SD1","SD1","SD1","SD1","SD2","SD2","SD2","SD2","SD2","SD3","SD3","SD3","SD3","SD3"), "SDs" = c(sd1,sd2,sd3))
-  
-  ANOVAofsds <- aov(y$SDs ~ y$Categories)
-  print(summary(ANOVAofsds))
-  
-  boxplot(y$SDs ~ y$Categories,
-          ylab="Standard deviation of loci frequencies",
-          xlab= "Dominance values",
-          names=c("d = 0.2","d = 0.5","d = 0.8"),
-          col= c("gray", "blue", "green")
-  ) 
-  
-  fixed <- c()
-  for (rep in sim_results){
-    temp <- rep[rep$genz == min(maximums),] #check that all have same max!
-    temp <- round(temp$freqs, digits = 1) #round to 1 digit so that 0.99 would be considered fixed
-    fixed <- list.append(fixed, length(which(temp==0 | temp == 1))/length(temp))
-  }
-  
-  fix1 <- fixed[1:5]
-  fix2 <- fixed[6:10]
-  fix3 <- fixed[11:15]
-  
-  z <- data.frame("Categories" = c("fix1","fix1","fix1","fix1","fix1","fix2","fix2","fix2","fix2","fix2","fix3","fix3","fix3","fix3","fix3"), "Fixs" = c(fix1,fix2,fix3))
-  
-  ANOVAoffixs <- aov(z$Fixs ~ z$Categories)
-  print(summary(ANOVAoffixs))
-  
-  boxplot(z$Fixs ~ z$Categories,
-          ylab="Proportion of fixed loci",
-          xlab= "Dominance values",
-          names=c("d = 0.2","d = 0.5","d = 0.8"),
-          col= c("gray", "blue", "green")
-  ) 
-}
+
+
+
+# histogram and density plots --------------------------------------------------
+
+# set working directory to the results folder of interest
+setwd(here::here("results/generations"))
+
+# load all files and filter only the final generation
+all_tbl <- list.files() %>% 
+  map_df(~read_plus(.)) 
+
+tbl_max_gen <- all_tbl %>%
+  split(.$filename) %>%
+  map(function(.data){filter(.data, genz == max(genz))}) %>%
+  do.call("rbind", .)
+
+# plot the density distribution
+ggplot(tbl_max_gen, aes(x = freqs, fill = filename)) +
+  geom_density(alpha = 0.2) + 
+  scale_fill_manual(values = c(rep("#e25dbb", 5), 
+                               rep("#6cdf4c", 5),
+                               rep("#258bd2", 5)),
+                    breaks = unique(all_tbl$filename)[c(1,6,11)],
+                    # legend name
+                    name = "Generations\nper year",
+                    # values tested
+                    labels = c("10", "20", "50")) +
+  ylab("Density") + 
+  xlab("Allele Frequency") +
+  theme_classic()
+

@@ -1,12 +1,22 @@
 ---
-title: "Seasonal Adaptation"
+title: "The effects of linkage disequilibrium on maintaining balanced polymorphisms in seasonal adaptation"
 author: \emph{Thomas O'Leary, Csenge Petak, Alison Hall}
-date: "11/23/2019"
-output: pdf_document
+output: 
+  pdf_document:
+    number_sections: true
 bibliography: refs.bib
 header-includes:
    - \usepackage{graphicx}
+   - \usepackage{float}
 ---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'H')
+
+require(tidyverse)
+require(cowplot)
+source(here::here("functions.R"))
+```
 
 
 # Abstract
@@ -17,33 +27,36 @@ Something about an orchard in Pennsylvania [@Bergland2014]. As an example of how
 
 # Methods
 
-### Basic Model
+## Basic Model
 
-The method for calculating fitness is based on the work of @Wittmann2017 who originally proposed “segregation lift” as a general mechanism which may maintain balanced polymorphisms in a population under certain conditions. 
+The method for calculating fitness is based on the work of @Wittmann2017 who originally proposed _segregation lift_ as a general mechanism which may maintain balanced polymorphisms in a population under certain conditions. 
 
-The model first determines an individual's seasonal score ($z$) according to the equation: write equations later :) 
+The model first determines an individual's seasonal score ($z$) according to the equation:
 
+$$
+z = n_{homo} + d * n_{het}
+$$
 where $n_{homo}$ is the number loci homozygous for the allele particular to that certain season and $d$ is a dominance parameter (which ranges between 0 and 1) and $n_{het}$ is the number of heterozygous loci. A dominance parameter of greater than one ($d > 1$) would correspond to a traditional heterozygote advantage, and therefore is not of interest in this model.
 
-The model we propose differs from the _segregation lift model_ in a few important ways. For one, the loci in our model are located on diploid linked chromosomes, so the homologous pairs can recombine during a simulated meiosis before mating. Expand on why this may be interesting or important… Linked genes not require a $d > 0.5$. Some genes that may be important for seasonal traits (_i.e._ heat shock proteins) are located close to each other on chromosomes and have a high amount of linkage disequilibrium… 
+The model we propose differs from the _segregation lift_ model in a few important ways. For one, the loci in our model are located on diploid linked chromosomes, so the homologous pairs can recombine during a simulated meiosis before mating. Expand on why this may be interesting or important… Linked genes not require a $d > 0.5$. Some genes that may be important for seasonal traits (_i.e._ heat shock proteins) are located close to each other on chromosomes and have a high amount of linkage disequilibrium… 
 
 Our model also does not allow for “selfing” where an individual can asexually reproduce with itself to create an offspring… Other stufff maybe too
 
 
 
-| Default Parameters               |      |
-|----------------------------------|------|
-| Crossover probability            | 0.05 |
-| Mutation probability             | 10   |
-| Population size                  | 500  |
-| Number of loci                   | 100  |
-| Exponent of the fitness function | 1    |
-| Dominance                        | 0.5  |
-| Years                            | 100  |
-| Generations per year             | 20   |
-| Seasonal balance                 | 2    |
+| Default Parameters               |           |
+|----------------------------------|-----------|
+| Crossover probability            | 0.05      |
+| Mutation probability             | $10^{-4}$ |
+| Population size                  | 500       |
+| Number of loci                   | 100       |
+| Exponent of the fitness function | 1         |
+| Dominance                        | 0.5       |
+| Years                            | 100       |
+| Generations per year             | 20        |
+| Seasonal balance                 | 2         |
 
-### Simulated seasonal selection 
+## Simulated seasonal selection 
 
 The general outline for the seasonal selection simulation:
 
@@ -60,6 +73,125 @@ Pairs of parents – of size $N$ – are sampled stochasticly with a probability
 
 
 # Results
+
+
+## Crossover rate
+
+## Epistasis
+
+This is how you reference Figure \ref{epi_density} in the text.
+
+```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of the epistatis parameter. \\label{epi_density}', message = FALSE, echo = FALSE}
+setwd(here::here("results/epistasis"))
+
+# load all files and filter only the final generation
+all_tbl <- list.files(pattern = "c_0.05") %>% 
+  map_df(~read_plus(.)) 
+
+tbl_max_gen <- all_tbl %>%
+  split(.$filename) %>%
+  map(function(.data){filter(.data, genz == max(genz))}) %>%
+  do.call("rbind", .)
+
+# plot the density distribution
+p1 <- ggplot(tbl_max_gen, aes(x = freqs, fill = filename)) +
+        geom_density(alpha = 0.2) + 
+        scale_fill_manual(values = c(rep("#e25dbb", 5), 
+                                     rep("#6cdf4c", 5),
+                                     rep("#258bd2", 5)),
+                          breaks = unique(all_tbl$filename)[c(1,6,11)],
+                          # legend name
+                          name = "Epistasis",
+                          # values tested
+                          labels = c("0.5", "1", "2")) +
+        ylab("Density") + 
+        xlab("Allele Frequency") +
+        theme_classic()
+
+print(p1)
+
+```
+
+## Dominance
+
+This is how you reference Figure \ref{dom_density} in the text.
+
+```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of dominance. \\label{dom_density}', message = FALSE, echo = FALSE}
+setwd(here::here("results/dominance"))
+
+# load all files and filter only the final generation
+all_tbl <- list.files() %>% 
+  map_df(~read_plus(.)) 
+
+tbl_max_gen <- all_tbl %>%
+  split(.$filename) %>%
+  map(function(.data){filter(.data, genz == max(genz))}) %>%
+  do.call("rbind", .)
+
+# plot the density distribution
+p2 <- ggplot(tbl_max_gen, aes(x = freqs, fill = filename)) +
+        geom_density(alpha = 0.2) + 
+        scale_fill_manual(values = c(rep("#e25dbb", 5), 
+                                     rep("#6cdf4c", 5),
+                                     rep("#258bd2", 5)),
+                          breaks = unique(all_tbl$filename)[c(1,6,11)],
+                          # legend name
+                          name = "Dominance",
+                          # values tested
+                          labels = c("0.2", "0.5", "0.8")) +
+        ylab("Density") + 
+        xlab("Allele Frequency") +
+        theme_classic()
+
+print(p2)
+
+```
+
+## Generations per season
+
+This is how you reference Figure \ref{gen_density} in the text.
+
+```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each number of generations per year. \\label{gen_density}', message = FALSE, echo = FALSE}
+setwd(here::here("results/generations"))
+
+# load all files and filter only the final generation
+all_tbl <- list.files() %>% 
+  map_df(~read_plus(.)) 
+
+tbl_max_gen <- all_tbl %>%
+  split(.$filename) %>%
+  map(function(.data){filter(.data, genz == max(genz))}) %>%
+  do.call("rbind", .)
+
+# plot the density distribution
+p3 <- ggplot(tbl_max_gen, aes(x = freqs, fill = filename)) +
+        geom_density(alpha = 0.2) + 
+        scale_fill_manual(values = c(rep("#e25dbb", 5), 
+                                     rep("#6cdf4c", 5),
+                                     rep("#258bd2", 5)),
+                          breaks = unique(all_tbl$filename)[c(1,6,11)],
+                          # legend name
+                          name = "Generations\nper year",
+                          # values tested
+                          labels = c("10", "20", "50")) +
+        ylab("Density") + 
+        xlab("Allele Frequency") +
+        theme_classic()
+
+print(p3)
+```
+
+
+```{r, fig.height = 3, fig.width = 8 , fig.cap = 'A density plot of the allele frequencies at the final generation \\label{density_combined}', message = FALSE, echo = FALSE}
+
+# this is how you could potentially mash a few figures together in the same plot
+plot_grid(p1, p2, labels = "AUTO")
+```
+
+## Seasonal balance
+
+## Population size
+
 
 
 # Discussion
