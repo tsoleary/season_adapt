@@ -15,6 +15,9 @@ knitr::opts_chunk$set(fig.pos = 'H')
 
 require(tidyverse)
 require(cowplot)
+require(rlist)
+require(png) 
+require(knitr)
 source(here::here("functions.R"))
 ```
 
@@ -73,6 +76,23 @@ Pairs of parents – of size $N$ – are sampled stochasticly with a probability
 
 
 # Results
+
+We first tested whether we were succsessful in reimplementing the model made by @Wittmann2017. We too found that with no linkage (i.e. cross-over happens at every loci) the both proportion of fixed loci (p = 2.52e-07) and standard deviation of loci frequencies (p = 4.63e-07) are lower when dominance is 0.8 compared to when dominance is 0.5. 
+
+```{r, message = FALSE, include=FALSE}
+setwd(here::here("results/cross_over"))
+values = c("d_0.5_y_1_c_0.5", "d_0.8_y_1_c_0.5")
+b <- do_analysis(values, "Dominance", "b2") # Dominance is going to be the x axis label, if boxplot number = b3 the third boxplot will be returned
+```
+```{r, echo = FALSE}
+b
+```
+
+```{r, fig.width = 2}
+# Small fig.width
+knitr::include_graphics("D05C05.png")
+knitr::include_graphics("D08C05.png")
+```
 
 
 ## Crossover rate
