@@ -396,7 +396,7 @@ run_simulation_uniform <- function(L, pop_size, d, y, cross_prob, mut_prob,
 }
 
 # analysis & ANOVA plotting function -------------------------------------------
-do_analysis <- function(values, test_name){
+do_analysis <- function(values, test_name, boxplot_n){
   
   files = c()
   for (value in values){
@@ -448,12 +448,17 @@ do_analysis <- function(values, test_name){
     c <- c + 1
   }
   
+  #b1 <- ggplot(x, aes(x=test_name, y="Mean loci frequency")) + 
+    geom_boxplot()
+  
   boxplot(x$Means ~ x$Categories,
           ylab="Mean loci frequency",
           xlab= test_name,
           names= v_names,
           col= v_colors
   )
+  b1 <- recordPlot()
+  
   
 #Calculating standard deviation-------------------------------------------------------------------------
   
@@ -468,6 +473,7 @@ do_analysis <- function(values, test_name){
           names= v_names,
           col= v_colors
   )
+  b2 <- recordPlot()
   
 #Calculating fixed proportions---------------------------------------------------------------------------
   
@@ -489,7 +495,17 @@ do_analysis <- function(values, test_name){
           names= v_names,
           col= v_colors
   )
+  b3 <- recordPlot()
   
+  if (boxplot_n == "b1"){
+    return(b1)
+  }
+  else if (boxplot_n == "b2"){
+    return(b2)
+  }
+  else {
+    return(b3)
+  }
 }
 
 # read csv and save file name for tbl in map_df --------------------------------
