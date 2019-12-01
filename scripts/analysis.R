@@ -6,10 +6,10 @@ require(rlist)
 source(here::here("functions.R"))
 
 # set working directory to the results folder of interest
-setwd(here::here("results/generations"))
+setwd(here::here("results/cross_over"))
 
 # get a list of the files that match the variable value of interest
-value <- "G_50"
+value <- "d_0.8_y_1_c_0.5"
 
 # which rep do you want to look at? 
 rep <- 3
@@ -40,7 +40,7 @@ sim_results %>%
 # freq at the seasonal turns for gen/year = 20
 sim_results %>%
   filter(genz < 2000 & genz %% 10 == 0) %>%
-  plot_freq(figure_caption = caption, fig_title = value)
+  plot_freq(figure_caption = caption, fig_title = "Dominance = 0.8, no linkage" )
 
 sim_results %>%
   filter(loci %in% as.character(sample(unique(sim_results$loci), 10, replace = FALSE))) %>%
@@ -74,10 +74,10 @@ sd(sim_results$freqs)
 
 # COMPARE different parameters ----------------------------------------------------------------
 
-setwd(here::here("results/dominance"))
-values = c("d_0.2", "d_0.5", "d_0.8")
-do_analysis(values, "Dominance") # Dominance is going to be the x axis label
-
+setwd(here::here("results/cross_over"))
+values = c("d_0.5_y_1_c_0.5", "d_0.8_y_1_c_0.5")
+b <- do_analysis(values, "Dominance", "b2") # Dominance is going to be the x axis label, if boxplot number = b3 the third boxplot will be returned
+b
 
 
 
