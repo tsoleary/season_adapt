@@ -20,7 +20,7 @@ source(here::here("functions.R"))
 
 
 # Abstract
-
+Understanding the mechanisms of preserving genetic diversity is paramount to predicting the capacity of organisms to adapt to changing environmental conditions. In environments characterized by seasonal fluctuations, certain alleles may be beneficial under certain conditions and harmful in other environments. This fluctuation of additive benefits results in a strong directional selection that varies according to the season. @Bergland2014 experimentally observed that seasonal variation is able to preserve polymorphisms that maintain genetic diversity. @Wittman2017 modeled how allelic dominance changes according to the season in an organism to account for different seasonal life-history strategies. They present a term called “segregation lift” which describes instances of seasonal allele-fluctuations which serve to maintain genetic diversity over time. In this paper, we build upon the @Wittman2017 model, using the same parameters to study how genetic linkage and seasonal balance may affect segregation lift. The @Wittman2017 model found that in an unlinked genome the dominance parameter needed to be greater than 0.5 for segregation lift to occur. Our model suggests that in diploid organisms exhibiting genetic linkage, segregation lift occured when dominance=0.5, suggesting that multilocus polymorphisms are maintained if, at a certain locus, one allele over the other  is beneficial during one season. 
 
 # Introduction
 
