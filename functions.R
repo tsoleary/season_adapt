@@ -396,7 +396,7 @@ run_simulation_uniform <- function(L, pop_size, d, y, cross_prob, mut_prob,
 }
 
 # analysis & ANOVA plotting function -------------------------------------------
-do_analysis <- function(values, test_name, boxplot_n){
+do_analysis <- function(values, test_name, vtest, boxplot_n){
   
   files = c()
   for (value in values){
@@ -404,6 +404,31 @@ do_analysis <- function(values, test_name, boxplot_n){
     files <- list.append(files, file) #contains all the files regarding your parameter in the correct order
   }
   
+  print(files)
+  
+  if (vtest == "c_"){
+    strip_values <- sub(".*c_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "d_"){
+    strip_values <- sub(".*d_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "G_"){
+    strip_values <- sub(".*G_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "Ps_"){
+    strip_values <- sub(".*Ps_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "Sb_"){
+    strip_values <- sub(".*Sb_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "y"){
+    strip_values <- sub(".*y_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else {
+    strip_values <- values
+  }
+  
+
   sim_results <- vector(mode = "list", length = length(values))
   i = 1
   for (f in files){
@@ -427,6 +452,8 @@ do_analysis <- function(values, test_name, boxplot_n){
     standard_devs <- list.append(standard_devs, sd(temp$freqs))
   }
   
+  print(means)
+  
   lm <- length(means)/5 #number of parameters to compare
   t <- list(1:lm)
   
@@ -442,14 +469,13 @@ do_analysis <- function(values, test_name, boxplot_n){
   p_colors = c("gray", "blue", "green", "yellow", "red", "orange", "purple", "white", "black", "pink")
   v_colors = c()
   c <- 1
-  for (v in values){
+  for (v in strip_values){
     v_names <- list.append(v_names, v)
     v_colors <- list.append(v_colors, p_colors[c])
     c <- c + 1
   }
   
-  #b1 <- ggplot(x, aes(x=test_name, y="Mean loci frequency")) + 
-    geom_boxplot()
+  print(v_names)
   
   boxplot(x$Means ~ x$Categories,
           ylab="Mean loci frequency",
