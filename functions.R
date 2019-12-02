@@ -396,7 +396,7 @@ run_simulation_uniform <- function(L, pop_size, d, y, cross_prob, mut_prob,
 }
 
 # analysis & ANOVA plotting function -------------------------------------------
-do_analysis <- function(values, test_name){
+do_analysis <- function(values, test_name, vtest, boxplot_n){
   
   files = c()
   for (value in values){
@@ -404,6 +404,31 @@ do_analysis <- function(values, test_name){
     files <- list.append(files, file) #contains all the files regarding your parameter in the correct order
   }
   
+  print(files)
+  
+  if (vtest == "c_"){
+    strip_values <- sub(".*c_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "d_"){
+    strip_values <- sub(".*d_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "G_"){
+    strip_values <- sub(".*G_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "Ps_"){
+    strip_values <- sub(".*Ps_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "Sb_"){
+    strip_values <- sub(".*Sb_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else if (vtest == "y"){
+    strip_values <- sub(".*y_", "", values)
+    strip_values <- sub("_", "", strip_values)
+  } else {
+    strip_values <- values
+  }
+  
+
   sim_results <- vector(mode = "list", length = length(values))
   i = 1
   for (f in files){
@@ -427,6 +452,8 @@ do_analysis <- function(values, test_name){
     standard_devs <- list.append(standard_devs, sd(temp$freqs))
   }
   
+  print(means)
+  
   lm <- length(means)/5 #number of parameters to compare
   t <- list(1:lm)
   
@@ -442,11 +469,13 @@ do_analysis <- function(values, test_name){
   p_colors = c("gray", "blue", "green", "yellow", "red", "orange", "purple", "white", "black", "pink")
   v_colors = c()
   c <- 1
-  for (v in values){
+  for (v in strip_values){
     v_names <- list.append(v_names, v)
     v_colors <- list.append(v_colors, p_colors[c])
     c <- c + 1
   }
+  
+  print(v_names)
   
   boxplot(x$Means ~ x$Categories,
           ylab="Mean loci frequency",
@@ -454,6 +483,8 @@ do_analysis <- function(values, test_name){
           names= v_names,
           col= v_colors
   )
+  b1 <- recordPlot()
+  
   
 #Calculating standard deviation-------------------------------------------------------------------------
   
@@ -468,6 +499,7 @@ do_analysis <- function(values, test_name){
           names= v_names,
           col= v_colors
   )
+  b2 <- recordPlot()
   
 #Calculating fixed proportions---------------------------------------------------------------------------
   
@@ -489,7 +521,17 @@ do_analysis <- function(values, test_name){
           names= v_names,
           col= v_colors
   )
+  b3 <- recordPlot()
   
+  if (boxplot_n == "b1"){
+    return(b1)
+  }
+  else if (boxplot_n == "b2"){
+    return(b2)
+  }
+  else {
+    return(b3)
+  }
 }
 
 # read csv and save file name for tbl in map_df --------------------------------
