@@ -55,17 +55,19 @@ Our model also does not allow for “selfing” where an individual can asexuall
 
 
 
-| Default Parameters               |           |
-|----------------------------------|-----------|
-| Crossover probability            | 0.05      |
-| Mutation probability             | $10^{-4}$ |
-| Population size                  | 500       |
-| Number of loci                   | 100       |
-| Exponent of the fitness function | 1         |
-| Dominance                        | 0.5       |
-| Years                            | 300       |
-| Generations per year             | 20        |
-| Seasonal balance                 | 2         |
+| Parameters                       | Default   | Alternatives values      |
+|----------------------------------|-----------| -------------------------|
+| Crossover probability            | 0.05      | 0, 0.001, 0.01, 0.1, 0.5 |
+| Generations per year             | 20        | 10, 20, 50               |
+| Seasonal balance                 | 2         | 1.25, 1.5                |
+| Population size                  | 500       | 100 1000                 |
+| Exponent of the fitness function | 1         | 0.5, 2                   |
+| Dominance                        | 0.5       | 0.2, 0.8                 |
+| Mutation probability             | $10^{-4}$ |                          |
+| Number of loci                   | 100       |                          |
+| Years                            | 300       |                          |
+
+Table: Default values are a list the values that were used generally for each simulation run. The alternative values are values that were used to determine the affect of each variable individually. Some alternatives were tested in combination -- maybe explain which ones were tested in combination.
 
 ## Simulated seasonal selection 
 
