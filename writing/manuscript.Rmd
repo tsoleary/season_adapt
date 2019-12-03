@@ -45,9 +45,9 @@ The method for calculating fitness is based on the work of @Wittmann2017 who ori
 The model first determines an individual's seasonal score ($z$) according to the equation:
 
 $$
-z = n_{homo} + d * n_{het}
+z = n_{hom} + d * n_{het}
 $$
-where $n_{homo}$ is the number loci homozygous for the allele particular to that certain season and $d$ is a dominance parameter (which ranges between 0 and 1) and $n_{het}$ is the number of heterozygous loci. A dominance parameter of greater than one ($d > 1$) would correspond to a traditional heterozygote advantage, and therefore is not of interest in this model.
+where $n_{hom}$ is the number loci homozygous for the allele particular to that certain season and $d$ is a dominance parameter (which ranges between 0 and 1) and $n_{het}$ is the number of heterozygous loci. A dominance parameter of greater than one ($d > 1$) would correspond to a traditional heterozygote advantage, and therefore is not of interest in this model.
 
 The model we propose differs from the _segregation lift_ model in a few important ways. For one, the loci in our model are located on diploid linked chromosomes, so the homologous pairs can recombine during a simulated meiosis before mating. Expand on why this may be interesting or important… Linked genes not require a $d > 0.5$. Some genes that may be important for seasonal traits (_i.e._ heat shock proteins) are located close to each other on chromosomes and have a high amount of linkage disequilibrium… 
 
@@ -63,7 +63,7 @@ Our model also does not allow for “selfing” where an individual can asexuall
 | Number of loci                   | 100       |
 | Exponent of the fitness function | 1         |
 | Dominance                        | 0.5       |
-| Years                            | 100       |
+| Years                            | 300       |
 | Generations per year             | 20        |
 | Seasonal balance                 | 2         |
 
@@ -250,11 +250,11 @@ p3 <- ggplot(tbl_max_gen, aes(x = freqs, fill = filename)) +
 print(p3)
 ```
 
-```{r, fig.width = 10}
-# Small fig.width
-knitr::include_graphics("G10.png")
-knitr::include_graphics("G50.png")
-```
+# ```{r, fig.width = 10}
+# # Small fig.width
+# knitr::include_graphics("G10.png")
+# knitr::include_graphics("G50.png")
+# ```
 
 ## Population size
 
