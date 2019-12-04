@@ -1,6 +1,7 @@
 ---
 title: "The effects of linkage disequilibrium on maintaining balanced polymorphisms in seasonal adaptation"
 author: \emph{Thomas O'Leary, Csenge Petak, Alison Hall}
+date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
   pdf_document:
     number_sections: true
@@ -33,7 +34,7 @@ There has been some debate regarding whether balancing selection is capable of m
     
 @Wittmann2017 created a model simulating the seasonal selection observed by @Bergland2014 to clarify the role this allelic fluctuation plays in maintaining multilocus polymorphisms. This model introduces the term “segregation lift” which considers the importance of dominance in maintaining polymorphism across many loci in the genome and proposes that segregation lift plays an important role in preserving genetic variation. 
 
-Our model recreates and builds upon the work of @Wittmann2017 to understand how linkage disequilibrium contributes to maintaining polymorphisms in a natural population. We study how rate of crossover, epistasis, allelic dominance, and seasonal balance contributes to segregation lift. 
+Our model recreates and builds upon the work of @Wittman2017 to understand how linkage disequilibrium contributes to maintaining polymorphisms in a natural population. We study how rate of crossover, epistasis, number of generation per season, population size, allelic dominance, and seasonal balance contributes to segregation lift. Finally, we test how allelic interactions effect the dynamics of seasonal adaptation.
 
 
 # Methods
@@ -90,12 +91,84 @@ Pairs of parents – of size $N$ – are sampled stochasticly with a probability
 8. A new generation of parents is selected according to their seasonal fitness and the process continues to cycle for a number of years.
 9. Loci specific allele frequencies are tracked throughout the simulated evolutionary run.
 
+## Interaction between loci: an alternative scenario
+
+We decided to test the scenario when loci have a certain interaction between them. In real genomes mutations often have different fitness effects depending on the genetic background i.e. the presence of other mutations. Thus, linkage can be advantageous if specific combinations of mutations are better kept together because of their reinforcing effect on each other. In this simulation we kept the same fitness function as before but also rewarded sequences of repeated values of the benefitial allele. For example, in the summer an individual with chromosome 01010101 would have a fitness of 4 for the number of 1's + 1 for the longest sequence of 1's, while an individual with chromosome 01110000 would have a fitness of 3 + 3 which would then outcompete the former individual eventhough the total number of 1's is less.
+
 
 # Results
 
-We first tested whether we were succsessful in reimplementing the model made by @Wittmann2017. We too found that with no linkage (i.e. cross-over happens at every loci) both the proportion of fixed loci (p = 2.52e-07) and standard deviation of loci frequencies (p = 4.63e-07) are lower when dominance is 0.8 compared to when dominance is 0.5. 
+We compared the effect of different variables by looking at the allele frequencies at the last generation of the simulation and calculated the standard deviation (the higher this value the less balancing polymorphism was present in the population) and proportion of fixed loci. Since we had 5 repetitions for each parameter value we used an Analysis of Variance (ANOVA) to look for significant differences.
 
-```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of the epistatis parameter. \\label{cross_density}', message = FALSE, echo = FALSE}
+We first tested whether we were succsessful in reimplementing the model made by @Wittmann2017. We too found that with no linkage (i.e. cross-over happens at every loci) both the proportion of fixed loci (p = 2.52e-07) and standard deviation of loci frequencies (p = 4.63e-07) are lower when dominance is 0.8 compared to when dominance is 0.5. See Figures \ref{dom_0.05_1} and \ref{dom_0.05_2}.
+
+```{r, fig.height = 10, fig.width = 8, fig.cap = 'Summer allele frequency at each loci over time. (A) When d = 0.8 fixation of a few alleles start only after about 700 generations and most alleles finish with frequencies closer to 0.5. (B) On the other hand, when d = 0.5 fixation starts as soon as 200 generations and most alleles fixate or get very close to fixation by the end of the simulation.  \\label{dom_0.05_1}', message = FALSE, echo = FALSE}
+setwd(here::here("results/cross_over"))
+
+# get a list of the files that match the variable value of interest
+value <- "d_0.8_y_1_c_0.5"
+
+# which rep do you want to look at? 
+rep <- 4
+
+# find files that match and create figure captions with parameter details
+files <- list.files()[grep(value, list.files())]
+names <- str_remove(files, ".csv")
+param <- str_split(names, "_", simplify = TRUE)[,c(3,5,7,9,11,13,15,18)]
+caption <- paste(paste("Generations per year", param[rep, 1]),
+                paste("Pop size", param[rep, 2]),
+                paste("Seasonal Balance", param[rep, 3]),
+                paste("Number of Loci", param[rep, 4]),
+                paste("\nDominance", param[rep, 5]),
+                paste("Epistasis", param[rep, 6]),
+                paste("Crossover probability", param[rep, 7]),
+                paste("Replicate number", param[rep, 8]), sep = "; ")
+
+
+# read in file and plot results
+sim_results <- read.csv(files[rep])
+
+# plot results less than generation 2000 and divisible by 10 to get only the 
+# freq at the seasonal turns for gen/year = 20
+p1 <- sim_results %>%
+  filter(genz < 2000 & genz %% 10 == 0) %>%
+  plot_freq(figure_caption = caption, fig_title = "Dominance = 0.8, no linkage" )
+
+setwd(here::here("results/cross_over"))
+
+# get a list of the files that match the variable value of interest
+value <- "d_0.5_y_1_c_0.5"
+
+# which rep do you want to look at? 
+rep <- 3
+
+# find files that match and create figure captions with parameter details
+files <- list.files()[grep(value, list.files())]
+names <- str_remove(files, ".csv")
+param <- str_split(names, "_", simplify = TRUE)[,c(3,5,7,9,11,13,15,18)]
+caption <- paste(paste("Generations per year", param[rep, 1]),
+                paste("Pop size", param[rep, 2]),
+                paste("Seasonal Balance", param[rep, 3]),
+                paste("Number of Loci", param[rep, 4]),
+                paste("\nDominance", param[rep, 5]),
+                paste("Epistasis", param[rep, 6]),
+                paste("Crossover probability", param[rep, 7]),
+                paste("Replicate number", param[rep, 8]), sep = "; ")
+
+
+# read in file and plot results
+sim_results <- read.csv(files[rep])
+
+# plot results less than generation 2000 and divisible by 10 to get only the 
+# freq at the seasonal turns for gen/year = 20
+p2 <- sim_results %>%
+  filter(genz < 2000 & genz %% 10 == 0) %>%
+  plot_freq(figure_caption = caption, fig_title = "Dominance = 0.5, no linkage" )
+
+plot_grid(p1, p2, nrow = 2, ncol = 1, labels = "AUTO")
+```
+
+```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of the dominance parameter. \\label{dom_0.05_2}', message = FALSE, echo = FALSE}
 setwd(here::here("results/cross_over"))
 
 # load all files and filter only the final generation
@@ -125,35 +198,26 @@ print(p1)
 
 ```
 
-```{r, fig.width = 10}
-# Small fig.width
-knitr::include_graphics("D05C05.png")
-knitr::include_graphics("D08C05.png")
-```
-
 Then, we started playing with different parameters.
+
 ## Crossover rate
 
-Crossover rate didn't seem to have an effect at all in terms of standard deviation (p = 0.123) and proportion of fixed loci (p = 0.462). Our hypothesis is that crossover didn't have an effect because two opposing forces created by it canceled out. First of all, higher crossover rates creates more genetic variation in the population "helping" selection but on the other hand it also creates stochasticity since a selected high fitness individual can pass on an unfit chromosome after crossover by chance. 
-
-When there was no crossover and so linkage was maximized there was a much bigger variation in the proportion of fixed loci in the last generation. This could be because since in this case the only way for an individual to change was through mutations, which is pretty infrequent, if the starting population contained a lot of individuals with more of one allele than the other many loci went to fixation while in a starting population with individuals whose genomes contained 50%-50% of the two alleles balancing polymorphism could be maintained more successfully. 
+Crossover rate didn't seem to have an effect at all in terms of standard deviation (p = 0.123) and proportion of fixed loci (p = 0.462). The greates variation in both measures was when there was no crossover introduced at all and changes in the chromosomes were only due to mutations. See Figure \ref{crossover_box}.
 
 ```{r, message = FALSE, include=FALSE}
 setwd(here::here("results/cross_over"))
 values = c("c_0_", "c_0.001", "c_0.01_", "c_0.05","c_0.1", "d_0.5_y_1_c_0.5_")
-b <- do_analysis(values, "Dominance", "c_", "b3")
+b <- do_analysis(values, "Crossover rates", "c_", "b3")
 ```
-```{r, echo = FALSE}
+```{r, fig.height = 5, fig.width = 8, fig.cap = 'Different crossover rates did not effect the allele frequency distribution at the end of the simulations.  \\label{crossover_box}', message = FALSE, echo = FALSE}
 b
 ```
 
 ## Dominance
 
-Since the crossover rate didn't have an effect on whether or not balanced polymorphism is achieved, our tests with different dominance values resulted in the same dynamics as when we tested with crossover rate 0.5.
+Since the crossover rate didn't have an effect on whether or not balanced polymorphism is achieved, our tests with different dominance values resulted in the same dynamics as when we tested with crossover rate 0.5. See Figure \ref{dom_density}.
 
-This is how you reference Figure \ref{dom_density} in the text.
-
-```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of dominance. \\label{dom_density}', message = FALSE, echo = FALSE}
+```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of dominance with a crossover rate of 0.05. \\label{dom_density}', message = FALSE, echo = FALSE}
 setwd(here::here("results/dominance"))
 
 # load all files and filter only the final generation
@@ -187,9 +251,7 @@ print(p2)
 
 ## Epistasis
 
-Under default crossover rate (0.05) epistasis didn't have an effect (standard deviation p = 0.986, proportion of fixed alleles p = 0.613).
-
-This is how you reference Figure \ref{epi_density} in the text.
+Under default crossover rate (0.05) epistasis didn't have an effect (standard deviation p = 0.986, proportion of fixed alleles p = 0.613). See Figure \ref{epi_density}.
 
 ```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of the epistatis parameter. \\label{epi_density}', message = FALSE, echo = FALSE}
 setwd(here::here("results/epistasis"))
@@ -224,65 +286,94 @@ print(p1)
 
 ## Generations per season
 
-When the generations per season was 10, the standard deviation was significantly lower than for longer generation times per season (p = 0.00161). We hypothise that with more generations per season loci were under selection for a longer period of time and thus were more likely to go to fixation at one point.
+When the generations per season was 10, the standard deviation was significantly lower than for longer generation times per season (p = 0.00161). See Figure \ref{gens}.
 
-This is how you reference Figure \ref{gen_density} in the text.
 
-```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each number of generations per year. \\label{gen_density}', message = FALSE, echo = FALSE}
+```{r, fig.height = 10, fig.width = 8, fig.cap = 'Summer allele frequency at each loci over time. When the generation time is shorter the allele frequencies oscilate less over time as they experience selection for a shorter period of time. Thus, alleles are less likely to go to fixation.\\label{gens}', message = FALSE, echo = FALSE}
 setwd(here::here("results/generations"))
 
-# load all files and filter only the final generation
-all_tbl <- list.files() %>% 
-  map_df(~read_plus(.)) 
+# get a list of the files that match the variable value of interest
+value <- "G_10"
 
-tbl_max_gen <- all_tbl %>%
-  split(.$filename) %>%
-  map(function(.data){filter(.data, genz == max(genz))}) %>%
-  do.call("rbind", .)
+# which rep do you want to look at? 
+rep <- 2
 
-# plot the density distribution
-p3 <- ggplot(tbl_max_gen, aes(x = freqs, fill = filename)) +
-        geom_density(alpha = 0.2) + 
-        scale_fill_manual(values = c(rep("#e25dbb", 5), 
-                                     rep("#6cdf4c", 5),
-                                     rep("#258bd2", 5)),
-                          breaks = unique(all_tbl$filename)[c(1,6,11)],
-                          # legend name
-                          name = "Generations\nper year",
-                          # values tested
-                          labels = c("10", "20", "50")) +
-        ylab("Density") + 
-        xlab("Allele Frequency") +
-        theme_classic()
+# find files that match and create figure captions with parameter details
+files <- list.files()[grep(value, list.files())]
+names <- str_remove(files, ".csv")
+param <- str_split(names, "_", simplify = TRUE)[,c(3,5,7,9,11,13,15,18)]
+caption <- paste(paste("Generations per year", param[rep, 1]),
+                paste("Pop size", param[rep, 2]),
+                paste("Seasonal Balance", param[rep, 3]),
+                paste("Number of Loci", param[rep, 4]),
+                paste("\nDominance", param[rep, 5]),
+                paste("Epistasis", param[rep, 6]),
+                paste("Crossover probability", param[rep, 7]),
+                paste("Replicate number", param[rep, 8]), sep = "; ")
 
-print(p3)
+
+# read in file and plot results
+sim_results <- read.csv(files[rep])
+
+# plot results less than generation 2000 and divisible by 10 to get only the 
+# freq at the seasonal turns for gen/year = 20
+p1 <- sim_results %>%
+  filter(genz < 2000 & genz %% 10 == 0) %>%
+  plot_freq(figure_caption = caption, fig_title = "Generations per year = 10" )
+
+setwd(here::here("results/generations"))
+
+# get a list of the files that match the variable value of interest
+value <- "G_50"
+
+# which rep do you want to look at? 
+rep <- 1
+
+# find files that match and create figure captions with parameter details
+files <- list.files()[grep(value, list.files())]
+names <- str_remove(files, ".csv")
+param <- str_split(names, "_", simplify = TRUE)[,c(3,5,7,9,11,13,15,18)]
+caption <- paste(paste("Generations per year", param[rep, 1]),
+                paste("Pop size", param[rep, 2]),
+                paste("Seasonal Balance", param[rep, 3]),
+                paste("Number of Loci", param[rep, 4]),
+                paste("\nDominance", param[rep, 5]),
+                paste("Epistasis", param[rep, 6]),
+                paste("Crossover probability", param[rep, 7]),
+                paste("Replicate number", param[rep, 8]), sep = "; ")
+
+
+# read in file and plot results
+sim_results <- read.csv(files[rep])
+
+# plot results less than generation 2000 and divisible by 10 to get only the 
+# freq at the seasonal turns for gen/year = 20
+p2 <- sim_results %>%
+  filter(genz < 2000 & genz %% 10 == 0) %>%
+  plot_freq(figure_caption = caption, fig_title = "Generations per year = 50" )
+
+plot_grid(p1, p2, nrow = 2, ncol = 1, labels = "AUTO")
 ```
-
-# ```{r, fig.width = 10}
-# # Small fig.width
-# knitr::include_graphics("G10.png")
-# knitr::include_graphics("G50.png")
-# ```
 
 ## Population size
 
-Population size had the biggest effect by far (standard deviation p = 1.51e-10, proportion of fixed loci p = 1.63e-10). Purely by changing population size from 100 to 1000 average proportion of fixed loci decreased from 0.9 to 0.3. This is probably due to the effect of random genetic drift; when the population is small alleles go to fixation due to the large effect of drift.
+Population size had the biggest effect by far (standard deviation p = 1.51e-10, proportion of fixed loci p = 1.63e-10). Purely by changing population size from 100 to 1000 average proportion of fixed loci decreased from 0.9 to 0.3. See Figure \ref{pop}.
 
-```{r}
+```{r, message = FALSE, include=FALSE}
 setwd(here::here("results/pop_size"))
 values = c("Ps_100_", "Ps_500", "Ps_1000")
-b <- do_analysis(values, "Generations per semester", "Ps_", "b3")
+b <- do_analysis(values, "Population size", "Ps_", "b3")
 ```
-```{r, echo = FALSE}
+```{r, fig.height = 5, fig.width = 6, fig.cap = 'Population size had a dramatic effect on both standard deviation and proportion of fixed loci.  \\label{pop}', message = FALSE, echo = FALSE}
 b
 ```
 
 ## Seasonal balance
 
-Interestingly, having a season that has more generations than in the other didn't result in a higher proportion of fixed alleles as one whould have expected (p = 0.289). Rather, while alleles fixed by reaching frequencies of 0 or 1 in the case where both seasons had equal number of generations (seasonal balance = 2) when there were more generations in one more alleles had frequencies of 1 than 0 but the overall proportion stayed the same.
+Having a season that has more generations than the other didn't result in a higher proportion of fixed alleles (p = 0.289). Rather, while when both seasons had equal number of generations (seasonal balance = 2) alleles fixed by reaching frequencies of either 0 or 1, when summer had more generations more alleles had frequencies of 1 than 0, but the overall proportion stayed the same. See Figure \ref{sb_density}.
 
 
-```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each number of generations per year. \\label{sb_density}', message = FALSE, echo = FALSE}
+```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of the seasonal balance parameter. \\label{sb_density}', message = FALSE, echo = FALSE}
 setwd(here::here("results/seasonal_balance"))
 
 # load all files and filter only the final generation
@@ -302,7 +393,7 @@ p3 <- ggplot(tbl_max_gen, aes(x = freqs, fill = filename)) +
                                      rep("#258bd2", 5)),
                           breaks = unique(all_tbl$filename)[c(1,6,11)],
                           # legend name
-                          name = "Generations\nper year",
+                          name = "Seasonal balance",
                           # values tested
                           labels = c("1.25", "1.5", "2")) +
         ylab("Density") + 
@@ -317,22 +408,41 @@ print(p3)
 
 ## Mutational interaction
 
-Since crossover rate didn't have an effect we decided to test the scenario when loci have a certain interaction between them. In real genomes mutations often have different fitness effects depending on the genetic background i.e. the presence of other mutations. Thus, linkage can be advantageous if specific combinations of mutations are better kept together because of their reinforcing effect on each other. In this simulation we kept the same fitness function as before but also rewarded sequences of the benefitial allele. For example, in the summer an individual with chromosome 010101 would have a fitness of 3 while an individual with chromosome 011000 would have a fitness of 2 + 2 (for the longest sequence in the genome) which would then outcompete the former individual eventhough the total number of 1's is less. 
+Introducing interaction between loci made seasonal balance to be reached more difficult. Every variable kept the same the new simulation produced a higher average standard deviation of allele frequencies (p = 3.58e-05) and proportion of fixed loci (p = 7.76e-06) regardless of crossover rate. See Figure \ref{int}.
 
-```{r}
+```{r, message = FALSE, include=FALSE}
 setwd(here::here("results/mut_interaction"))
 values = c("c_0.5_new", "c_0.05_new", "c_0.5_num", "c_0.05_num")
-b <- do_analysis(values, "Generations per semester", "none", "b3")
+b <- do_analysis(values, "Crossover rate and type of simulation", "none", "b3")
+```
+```{r, fig.height = 5, fig.width = 6, fig.cap = 'Interaction between loci increased proportion of fixed loci regardless of crossover rate.  \\label{int}', message = FALSE, echo = FALSE}
+b
 ```
 
-```{r, fig.height = 3, fig.width = 8 , fig.cap = 'A density plot of the allele frequencies at the final generation \\label{density_combined}', message = FALSE, echo = FALSE}
-
-# this is how you could potentially mash a few figures together in the same plot
-plot_grid(p1, p2, labels = "AUTO")
-```
 
 # Discussion
 
+## Crossover rate
+
+Crossover rate didn't have an effect on seasonal balance. Our hypothesis is that two opposing forces created by it canceled out. First of all, higher crossover rates create more genetic variation in the population "helping" selection but on the other hand it also creates stochasticity since a selected high fitness individual can pass on an unfit chromosome after crossover by chance. 
+
+When there was no crossover and so linkage was maximized there was a much bigger variation in the proportion of fixed loci in the last generation. This could be because since in this case the only way for an individual to change was through mutations, which is pretty infrequent, and if the starting population contained a lot of individuals with more of one allele than the other many loci went to fixation while in a starting population with individuals whose genomes contained 50%-50% of the two alleles balancing polymorphism could be maintained more successfully.
+
+## Epistasis
+
+We’ll think more about an explanation on why epistasis didn’t have an effect.
+
+## Generation
+
+We hypothesize that when the generation time is shorter the allele frequencies oscillate less over time as they experience selection for a shorter period of time. Thus, alleles are less likely to go to fixation.
+
+## Population size
+
+Population size had the greatest effect of all the variables we tested. This is probably due to the effect of random genetic drift; when the population is small alleles go to fixation due to the large effect of drift.
+
+## Mutational interaction
+
+We’ll think more about an explanation on why even here crossover didn’t seem to have an effect.
 
 # References
 
