@@ -89,7 +89,7 @@ Pairs of parents – of size $N$ – are sampled stochasticly with a probability
 
 We first tested whether we were succsessful in reimplementing the model made by @Wittmann2017. We too found that with no linkage (i.e. cross-over happens at every loci) both the proportion of fixed loci (p = 2.52e-07) and standard deviation of loci frequencies (p = 4.63e-07) are lower when dominance is 0.8 compared to when dominance is 0.5. 
 
-```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of the epistatis parameter. \\label{epi_density}', message = FALSE, echo = FALSE}
+```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each value of the epistatis parameter. \\label{cross_density}', message = FALSE, echo = FALSE}
 setwd(here::here("results/cross_over"))
 
 # load all files and filter only the final generation
@@ -276,7 +276,7 @@ b
 Interestingly, having a season that has more generations than in the other didn't result in a higher proportion of fixed alleles as one whould have expected (p = 0.289). Rather, while alleles fixed by reaching frequencies of 0 or 1 in the case where both seasons had equal number of generations (seasonal balance = 2) when there were more generations in one more alleles had frequencies of 1 than 0 but the overall proportion stayed the same.
 
 
-```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each number of generations per year. \\label{gen_density}', message = FALSE, echo = FALSE}
+```{r, fig.height = 3, fig.width = 5, fig.cap = 'A density plot of the allele frequencies at the final generation for five replicates of each number of generations per year. \\label{sb_density}', message = FALSE, echo = FALSE}
 setwd(here::here("results/seasonal_balance"))
 
 # load all files and filter only the final generation
