@@ -33,7 +33,7 @@ There has been some debate regarding whether balancing selection is capable of m
     
 @Wittmann2017 created a model simulating the seasonal selection observed by @Bergland2014 to clarify the role this allelic fluctuation plays in maintaining multilocus polymorphisms. This model introduces the term “segregation lift” which considers the importance of dominance in maintaining polymorphism across many loci in the genome and proposes that segregation lift plays an important role in preserving genetic variation. 
 
-Our model recreates and builds upon the work of @Wittmann2017 to understand how linkage disequilibrium contributes to maintaining polymorphisms in a natural population. We study how rate of crossover, epistasis, allelic dominance, and seasonal balance contributes to segregation lift. 
+Our model recreates and builds upon the work of @Wittmann2017 to understand how linkage disequilibrium contributes to maintaining polymorphisms in a natural population. We study how the rate of crossover, epistasis, allelic dominance, and seasonal balance contribute to segregation lift. 
 
 
 # Methods
