@@ -49,6 +49,12 @@ z = n_{hom} + d * n_{het}
 $$
 where $n_{hom}$ is the number loci homozygous for the allele particular to that certain season and $d$ is a dominance parameter (which ranges between 0 and 1) and $n_{het}$ is the number of heterozygous loci. A dominance parameter of greater than one ($d > 1$) would correspond to a traditional heterozygote advantage, and therefore is not of interest in this model.
 
+The fitness is calculated according to the equation: 
+$$
+w(z) = (1+z)^y
+$$
+where $w(z)$ is the fitness of a particular z score. The exponent here is introduced to allow for non-linear interaction between genotype and fitness, an interaction that approximates the affect of epistasis.
+
 The model we propose differs from the _segregation lift_ model in a few important ways. For one, the loci in our model are located on diploid linked chromosomes, so the homologous pairs can recombine during a simulated meiosis before mating. Expand on why this may be interesting or important… Linked genes not require a $d > 0.5$. Some genes that may be important for seasonal traits (_i.e._ heat shock proteins) are located close to each other on chromosomes and have a high amount of linkage disequilibrium… 
 
 Our model also does not allow for “selfing” where an individual can asexually reproduce with itself to create an offspring… Other stufff maybe too
