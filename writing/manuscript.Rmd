@@ -444,5 +444,20 @@ Population size had the greatest effect of all the variables we tested. This is 
 
 We’ll think more about an explanation on why even here crossover didn’t seem to have an effect.
 
+# Easton comments
+
+- I was surprised that you opened the introduction with text on phenotypic plasticity. Your work really gets at genetic change from season to season, as opposed to only phenotypic changes. 
+- Good second introduction paragraph to explain the two most important papers that motivate your work
+- In your introduction, you need an additional paragraph explaining what gaps remain after the two papers you describe. This then sets up the reasons for why your study will be important 
+- Good job describing the model
+- Eventually section 3.2 could be made into a nice conceptual figure
+- Overall, your figures came out very nice. They are simple and aesthetically appealing. In the real manuscript, you won't want the figure interpretations within each caption
+- As I mentioned in class, I think there are some interesting parts of your analyses in the context of climate change predictions. With climate change, we expect many places to experience longer (and earlier) summers. In addition, generation times for some species are expected to shorten with warmer temperatures. To me, your results would then say that with climate change, more loci are expected to become fixed because of summer changes, but that shorter generations might present an opposing force. 
+- I think your work is certainly possible. I am not an expert on this literature, but it does seem that you address several interesting points by focusing on epistatis, seasonal balance, and generation length. 
+
+Here is what I need from you for the final project:
+
+Nothing. Your first draft is good enough. If you make edits and changes, I am happy to read additional drafts, this semester or next. Otherwise, you are done for the semester! Great work!
+
 # References
 
