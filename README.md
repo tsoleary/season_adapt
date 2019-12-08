@@ -25,4 +25,4 @@
 - does linkage actually hinder balancing selection?
 - look at less generations per year, maybe as little at 1 or 2 per season - butterflies
 - what other ways can we contribute and expand on this story?
-
+- evolve crossover rate
